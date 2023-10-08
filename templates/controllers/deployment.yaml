@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "c8r-agent.fullname" . }}
+  labels:
+    {{- include "c8r-agent.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.controller.autoscaling.enabled }}
+  replicas: {{ .Values.controller.replicas }}
+  {{- end }}
+  {{- if ge (int .Capabilities.KubeVersion.Minor) 22 }}
+  minReadySeconds: 10
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "c8r-agent.selectorLabels" . | nindent 6 }}
+  template:
+    {{- include "c8r-agent.pod-template" . | nindent 4 }}
+  {{- with .Values.controller.updateStrategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}

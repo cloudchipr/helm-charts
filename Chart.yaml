@@ -1,0 +1,17 @@
+apiVersion: v2
+appVersion: v0.1.0
+dependencies:
+- condition: kubeStateMetrics.enabled
+  name: kube-state-metrics
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 5.12.*
+- condition: nodeExporter.enabled
+  name: prometheus-node-exporter
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 4.23.*
+name: c8r-cost-analizer
+sources:
+- https://github.com/prometheus-community/helm-charts
+- https://github.com/grafana/helm-charts
+type: application
+version: 0.1.0
