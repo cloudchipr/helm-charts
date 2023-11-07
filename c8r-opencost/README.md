@@ -114,4 +114,4 @@ kubectl delete namespace c8r-opencost
 
 ## License
 
-[**Apache 2.0 License**](../LICENSE/LICENSE)
+[**Apache 2.0 License**](../LICENSE)
