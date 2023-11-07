@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: v0.1.0
+appVersion: 0.1.0
 dependencies:
 - condition: prometheusServer.enabled
   name: prometheus
@@ -9,7 +9,7 @@ dependencies:
   name: opencost
   repository: https://opencost.github.io/opencost-helm-chart
   version: 1.*
-name: c8r-cost-analizer
+name: c8r-opencost
 sources:
 - https://github.com/prometheus-community/helm-charts
 - https://github.com/grafana/helm-charts

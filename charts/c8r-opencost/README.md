@@ -26,20 +26,14 @@
 [Helm](https://helm.sh) must be installed to use the charts.  Please refer to
 Helm's [documentation](https://helm.sh/docs) to get started.
 
-Once Helm has been set up correctly, add the repo as follows:
-
-```bash
-helm repo add c8r https://cloudchipr.github.io/helm-charts
-```
-
 If you had already added this repo earlier, run `helm repo update` to retrieve
-the latest versions of the packages.  You can then run `helm search repo
-c8r` to see the charts.
+the latest versions of the packages.
 
 To install the chart:
 
 ```bash
-helm upgrade -i c8r-opencost -n c8r-opencost c8r/c8r-opencost \
+helm upgrade -i c8r-opencost -n c8r-opencost \
+  oci://public.ecr.aws/i9x0g0r1/c8r-opencost \
   --set global.clusterId="YOUR_CLUSTER_ID" \ 
   --set global.bearerToken="YOUR_BEARER_TOKEN"
   --create-namespace 
@@ -50,7 +44,8 @@ If you are installing Chart on `GKE` cluster, you need to use this command:
 >*Note: See more about [Google Cloud Platform Configuration](https://www.opencost.io/docs/configuration/gcp)*
 
 ```bash
-helm upgrade -i c8r-opencost -n c8r-opencost c8r/c8r-opencost \
+helm upgrade -i c8r-opencost -n c8r-opencost \
+  oci://public.ecr.aws/i9x0g0r1/c8r-opencost \
   --set global.clusterId="YOUR_CLUSTER_ID" \ 
   --set global.bearerToken="YOUR_BEARER_TOKEN"
   --set opencost.opencost.exporter.cloudProviderApiKey="YOUR_GCP_API_KEY"

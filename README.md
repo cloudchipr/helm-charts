@@ -1,6 +1,6 @@
 # C8R Kubernetes Helm Charts
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Release Charts](https://github.com/cloudchipr/helm-charts/workflows/Release%20Charts/badge.svg?branch=main) [![Releases Downloads](https://img.shields.io/github/downloads/cloudchipr/helm-charts/total.svg)](https://github.com/cloudchipr/helm-charts/releases)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) <!-- ![Release Charts](https://github.com/cloudchipr/helm-charts/workflows/Release%20Charts/badge.svg?branch=main) --> [![Releases Downloads](https://img.shields.io/github/downloads/cloudchipr/helm-charts/total.svg)](https://github.com/cloudchipr/helm-charts/releases)
 
 ## Requirements
 
@@ -11,10 +11,10 @@
 
 [Helm](https://helm.sh/) must be installed to use the charts. Please refer to Helm's [documentation](https://helm.sh/docs/chart_template_guide/getting_started/) to get started.
 
-Once Helm is set up properly, add the repository as follows:
+Once Helm is set up properly, you can install charts as follows:
 
 ```bash
-helm repo add c8r https://cloudchipr.github.io/helm-charts
+helm upgrade -i -n YOUR_NAMESPACE APP_NAME  oci://public.ecr.aws/i9x0g0r1/CHART_NAME
 ```
 
 You can then run `helm search repo c8r` to see the charts.
