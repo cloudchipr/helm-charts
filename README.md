@@ -9,7 +9,7 @@
 
 ## Usage
 
-Helm must be installed to use the charts. Please refer to Helm's documentation to get started.
+[Helm](https://helm.sh/) must be installed to use the charts. Please refer to Helm's [documentation](https://helm.sh/docs/chart_template_guide/getting_started/) to get started.
 
 Once Helm is set up properly, add the repository as follows:
 
