@@ -1,0 +1,526 @@
+##  Global
+
+global:
+  ##  global.clusterId Your Cluster ID (Requried)
+  clusterId: ""
+
+  ##  global.endpoint CloudChipr endpoint (Required)
+  endpoint: "metrics.cloudchipr.dev"
+
+
+  ##  global.bearerToken Your CloudChipr bearer token (Required)
+  bearerToken: ""
+
+  ##  global.nameOverride Chart Name override
+  nameOverride: ""
+
+  ##  global.namespaceOverride Chart NameSpace override
+  namespaceOverride: ""
+
+
+##  OpenCost Chart
+
+openCost:
+  ##  openCost.enabled Enable/Disable sub Chart OpenCost
+  enabled: true
+
+opencost:
+  opencost:
+    ##  opencost.opencost.tolerations Toleration labels for pod assignment
+    tolerations: []
+
+    ##  opencost.opencost.nodeSelector Node labels for pod assignment
+    nodeSelector: {}
+
+    ##  opencost.opencost.affinity Affinity settings for pod assignment
+    affinity: {}
+
+    ##  opencost.opencost.topologySpreadConstraints Assign custom TopologySpreadConstraints rules
+    topologySpreadConstraints: []
+    
+    exporter:
+      ##  opencost.opencost.exporter.cloudProviderApiKey CloudProvider API key if example You are deploying Chart on GKE
+      cloudProviderApiKey: ""
+
+      ##  opencost.opencost.exporter.resources Resource requests/limits for OpenCost exporter
+      resources: {}
+        # # -- CPU/Memory resource requests
+        # requests:
+        #   cpu: '10m'
+        #   memory: '55Mi'
+        # # -- CPU/Memory resource limits
+        # limits:
+        #   cpu: '100m'
+        #   memory: '256Mi'
+
+      ##  opencost.opencost.exporter.persistence.enabled Persistent volume claim for storing the data. eg: csv file
+      persistence:
+        enabled: false
+
+      aws:
+        ##  opencost.opencost.exporter.aws.secret_access_key AWS secret access key (If needed)
+        secret_access_key: ""
+        ##  opencost.opencost.exporter.aws.access_key_id AWS access key id (If needed)
+        access_key_id: ""
+
+    ##  opencost.opencost.prometheus
+    prometheus:
+      external:
+        ##  opencost.opencost.prometheus.external.enabled Enable/Disable External Prometheus Server endpoint (We recomended to do not change it)
+        enabled: false
+
+      internal:
+         ##  opencost.opencost.prometheus.internal.enabled Enable/Disable Internal Prometheus endpoint
+        enabled: true
+
+        ##  opencost.opencost.prometheus.internal.serviceName Service name of in-cluster Prometheus (We recomended to do not change it)
+        serviceName: "{{ .Release.Name }}-prometheus-server"
+
+        ##  opencost.opencost.prometheus.internal.namespaceName Namespace of in-cluster Prometheus (We recomended to do not change it)
+        namespaceName: "{{ .Release.Namespace }}"
+
+        ##  opencost.opencost.prometheus.internal.port Service port of in-cluster Prometheus (We recomended to do not change it)
+        port: 80
+
+    ##  opencost.opencost.ui
+    ui:
+      ##  opencost.opencost.ui.enabled Enable/Disable OpenCost UI (We are recomended to disable UI)
+      enabled: false
+
+
+##  Prometheus Chart
+
+prometheusServer:
+  ##  prometheusServer.enabled Enable/Disable sub Chart
+  enabled: true
+
+prometheus:
+  configmapReload:
+    ##  prometheus.configmapReload.prometheus.enabled Enable/Disable Prometheus ConfigMap reloader
+    prometheus:
+      enabled: true
+
+  server:
+    ##  prometheus.server.persistentVolume.enabled  Enable/Disable Prometheus server persistent volume
+    persistentVolume:
+      enabled: false
+
+    ##  prometheus.server.extraFlags Prometheus server extra command line flags
+    extraFlags:
+      - web.enable-lifecycle
+      - web.enable-remote-write-receiver
+
+    ##  prometheus.server.remoteWrite  Prometheus server remoteWrite configuration (We recomended to do not change it)
+    remoteWrite:
+      ##  prometheus.server.remoteWrite[0].url
+      - url: '{{ include "RemoteWrite" . }}'
+
+        ##  prometheus.server.remoteWrite[0].authorization.credentials_file
+        authorization:
+          credentials_file: /etc/secrets/token
+        
+        ##  prometheus.server.remoteWrite[0].queue_config.retry_on_http_429
+        queue_config:
+          retry_on_http_429: true       
+
+    ##  prometheus.server.extraSecretMounts Prometheus server extra secret mount (We recomended to do not change it)
+    extraSecretMounts: 
+      ##  prometheus.server.extraSecretMounts[0].name
+      - name: bearertoken
+
+        ##  prometheus.server.extraSecretMounts[0].mountPath
+        mountPath: /etc/secrets
+
+        ##  prometheus.server.extraSecretMounts[0].secretName
+        secretName: bearertoken
+
+        ##  prometheus.server.extraSecretMounts[0].readOnly
+        readOnly: true
+
+    ##  prometheus.server.tolerations  Node tolerations for server scheduling to nodes with taints
+    tolerations: []
+      # - key: "key"
+      #   operator: "Equal|Exists"
+      #   value: "value"
+      #   effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+    ##  prometheus.server.nodeSelector Node Selector
+    nodeSelector: {}
+
+    ##  prometheus.server.affinity Pod affinity
+    affinity: {}
+
+    ##  prometheus.server.topologySpreadConstraints Pod topology spread constraints
+    topologySpreadConstraints: []
+
+
+    ##  prometheus.server.resources Resource requests/limits for Prometheus server
+    resources: {}
+      # limits:
+      #   cpu: 500m
+      #   memory: 512Mi
+      # requests:
+      #   cpu: 500m
+      #   memory: 512Mi
+
+    ##  prometheus.server.retention Prometheus data retention period
+    retention: "1d"
+
+  ##  prometheus.serverFiles Prometheus server ConfigMap entries (We recomended to do not change it)
+  serverFiles:
+    prometheus.yml:
+      ##  prometheus.serverFiles.prometheus-yml.rule_files
+      rule_files:
+        - /etc/config/recording_rules.yml
+        - /etc/config/alerting_rules.yml
+        - /etc/config/rules
+        - /etc/config/alerts
+      scrape_configs:
+      ##  prometheus.serverFiles.prometheus-yml.scrape_configs[0].job_name
+      - job_name: c8r-agent-prometheus
+        static_configs:
+          ##  prometheus.serverFiles.prometheus-yml.scrape_configs[0].static_configs[0].targets
+          - targets:
+            - localhost:9090
+
+  ##  prometheus.extraScrapeConfigs (We recomended to do not change it)
+  extraScrapeConfigs: |
+    - job_name: 'c8r-agent-kubernetes-apiservers'
+      kubernetes_sd_configs:
+        - role: endpoints
+      scheme: https
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        insecure_skip_verify: true
+      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+          action: keep
+          regex: default;kubernetes;https
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement: {{ include "clusterId" . }}     
+
+    - job_name: 'c8r-agent-kubernetes-nodes'
+      scheme: https
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        insecure_skip_verify: true
+      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      kubernetes_sd_configs:
+        - role: node
+      relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_node_label_(.+)
+        - target_label: __address__
+          replacement: kubernetes.default.svc:443
+        - source_labels: [__meta_kubernetes_node_name]
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/$1/proxy/metrics
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement: {{ include "clusterId" . }}   
+
+    - job_name: 'c8r-agent-kubernetes-nodes-cadvisor'
+      scheme: https
+      tls_config:
+        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        insecure_skip_verify: true
+      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+      kubernetes_sd_configs:
+        - role: node
+      relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_node_label_(.+)
+        - target_label: __address__
+          replacement: kubernetes.default.svc:443
+        - source_labels: [__meta_kubernetes_node_name]
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement: {{ include "clusterId" . }}         
+
+    - job_name: 'c8r-agent-kubernetes-service-endpoints'
+      honor_labels: true
+      kubernetes_sd_configs:
+        - role: endpoints
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape_slow]
+          action: drop
+          regex: true
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+          action: replace
+          target_label: __scheme__
+          regex: (https?)
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+          action: replace
+          target_label: __address__
+          regex: (.+?)(?::\d+)?;(\d+)
+          replacement: $1:$2
+        - action: labelmap
+          regex: __meta_kubernetes_service_annotation_prometheus_io_param_(.+)
+          replacement: __param_$1
+        - action: labelmap
+          regex: __meta_kubernetes_service_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: namespace
+        - source_labels: [__meta_kubernetes_service_name]
+          action: replace
+          target_label: service
+        - source_labels: [__meta_kubernetes_pod_node_name]
+          action: replace
+          target_label: node
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement: {{ include "clusterId" . }}        
+
+    - job_name: 'c8r-agent-kubernetes-service-endpoints-slow'
+      honor_labels: true
+      scrape_interval: 5m
+      scrape_timeout: 30s
+      kubernetes_sd_configs:
+        - role: endpoints
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape_slow]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+          action: replace
+          target_label: __scheme__
+          regex: (https?)
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+          action: replace
+          target_label: __address__
+          regex: (.+?)(?::\d+)?;(\d+)
+          replacement: $1:$2
+        - action: labelmap
+          regex: __meta_kubernetes_service_annotation_prometheus_io_param_(.+)
+          replacement: __param_$1
+        - action: labelmap
+          regex: __meta_kubernetes_service_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: namespace
+        - source_labels: [__meta_kubernetes_service_name]
+          action: replace
+          target_label: service
+        - source_labels: [__meta_kubernetes_pod_node_name]
+          action: replace
+          target_label: node
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement: {{ include "clusterId" . }}          
+
+    - job_name: 'c8r-agent-prometheus-pushgateway'
+      honor_labels: true
+      kubernetes_sd_configs:
+        - role: service
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probe]
+          action: keep
+          regex: pushgateway
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement: {{ include "clusterId" . }}            
+
+    - job_name: 'c8r-agent-kubernetes-services'
+      honor_labels: true
+      metrics_path: /probe
+      params:
+        module: [http_2xx]
+      kubernetes_sd_configs:
+        - role: service
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probe]
+          action: keep
+          regex: true
+        - source_labels: [__address__]
+          target_label: __param_target
+        - target_label: __address__
+          replacement: blackbox
+        - source_labels: [__param_target]
+          target_label: instance
+        - action: labelmap
+          regex: __meta_kubernetes_service_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          target_label: namespace
+        - source_labels: [__meta_kubernetes_service_name]
+          target_label: service
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement: {{ include "clusterId" . }}         
+
+    - job_name: 'c8r-agent-kubernetes-pods'
+      honor_labels: true
+      kubernetes_sd_configs:
+        - role: pod
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape_slow]
+          action: drop
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
+          action: replace
+          regex: (https?)
+          target_label: __scheme__
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+          action: replace
+          regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
+          replacement: '[$2]:$1'
+          target_label: __address__
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+          action: replace
+          regex: (\d+);((([0-9]+?)(\.|$)){4})
+          replacement: $2:$1
+          target_label: __address__
+        - action: labelmap
+          regex: __meta_kubernetes_pod_annotation_prometheus_io_param_(.+)
+          replacement: __param_$1
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: pod
+        - source_labels: [__meta_kubernetes_pod_phase]
+          regex: Pending|Succeeded|Failed|Completed
+          action: drop
+        - source_labels: [__meta_kubernetes_pod_node_name]
+          action: replace
+          target_label: node
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement: {{ include "clusterId" . }}      
+
+    - job_name: 'c8r-agent-kubernetes-pods-slow'
+      honor_labels: true
+      scrape_interval: 5m
+      scrape_timeout: 30s
+      kubernetes_sd_configs:
+        - role: pod
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape_slow]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
+          action: replace
+          regex: (https?)
+          target_label: __scheme__
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+          action: replace
+          regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
+          replacement: '[$2]:$1'
+          target_label: __address__
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+          action: replace
+          regex: (\d+);((([0-9]+?)(\.|$)){4})
+          replacement: $2:$1
+          target_label: __address__
+        - action: labelmap
+          regex: __meta_kubernetes_pod_annotation_prometheus_io_param_(.+)
+          replacement: __param_$1
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: pod
+        - source_labels: [__meta_kubernetes_pod_phase]
+          regex: Pending|Succeeded|Failed|Completed
+          action: drop
+        - source_labels: [__meta_kubernetes_pod_node_name]
+          action: replace
+          target_label: node
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement:  {{ include "clusterId" . }}
+
+    - job_name: c8r-agent-kubernetes-opencost
+      kubernetes_sd_configs:
+        - role: pod
+      relabel_configs:
+        - action: keep
+          regex: opencost-*
+          source_labels:
+            - __meta_kubernetes_pod_label_app_kubernetes_io_name
+        - source_labels: []
+          regex: .*
+          target_label: cluster_id
+          replacement: {{ include "clusterId" . }} 
+
+
+  ##  prometheus.alertmanager
+  alertmanager:
+    ##  ##  prometheus.alertmanager.enabled Enable/Disable Alertmanager sub Chart
+    enabled: false
+
+  ##  prometheus.kube-state-metrics.enabled Enable kube-state-metrics sub Chart (Requried)
+  kube-state-metrics:
+    enabled: true
+
+    ##  prometheus.kube-state-metrics.nodeSelector Node labels for pod assignment
+    nodeSelector: {}
+
+    ##  prometheus.kube-state-metrics.affinity Affinity settings for pod assignment
+    affinity: {}
+
+    ##  prometheus.kube-state-metrics.tolerations Tolerations for pod assignment
+    tolerations: []
+
+    ##  prometheus.kube-state-metrics.topologySpreadConstraints Topology spread constraints for pod assignment
+    topologySpreadConstraints: []    
+
+  ##  prometheus.prometheus-node-exporter.enabled Enable/Disable node-exporter sub Chart (Requried)
+  prometheus-node-exporter:
+    enabled: true
+
+    ##  prometheus.prometheus-node-exporter.service (We recomended to do not change it)
+    service:
+      ##  prometheus.prometheus-node-exporter.service.enabled
+      enabled: true
+      type: ClusterIP
+      port: 49191
+      targetPort: 49191
+  
+  ##  prometheus.prometheus-pushgateway (We recomended to do not change it)
+  prometheus-pushgateway:
+    ##  prometheus.prometheus-pushgateway.enabled  Enable/Disable prometheus-pushgateway sub Chart
+    enabled: false
