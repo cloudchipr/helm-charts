@@ -1,0 +1,26 @@
+apiVersion: v1
+entries:
+  c8r-opencost:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-11-09T18:18:46.363056425+04:00"
+    dependencies:
+    - condition: prometheusServer.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 25.*
+    - condition: openCost.enabled
+      name: opencost
+      repository: https://opencost.github.io/opencost-helm-chart
+      version: 1.*
+    digest: 0f725e6759c0777d04cdb5d7b641b9d4954cb0454c8356332e4aeaa8beaf9040
+    name: c8r-opencost
+    sources:
+    - https://github.com/prometheus-community/helm-charts
+    - https://github.com/grafana/helm-charts
+    - https://opencost.github.io/opencost-helm-chart
+    type: application
+    urls:
+    - https://cloudchipr.github.io/helm-charts/c8r-opencost-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-11-09T18:18:46.355884895+04:00"

@@ -23,8 +23,8 @@ You can then run `helm search repo c8r` to see the charts.
 
 The source code of all **C8R** [Helm](https://helm.sh/) charts can be found on [GitHub](https://github.com/cloudchipr/helm-charts/)
 
-We'd love to have you contribute! Please refer to our [contribution guidelines](./CONTRIBUTING.md) for details.
+We'd love to have you contribute! Please refer to our [contribution guidelines](https://github.com/cloudchipr/helm-charts/blob/main/CONTRIBUTING.md) for details.
 
 ## License
 
-[**Apache 2.0 License**](./LICENSE)
+[**Apache 2.0 License**](https://github.com/cloudchipr/helm-charts/blob/main/LICENSE)
