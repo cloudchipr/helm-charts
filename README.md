@@ -11,10 +11,10 @@
 
 [Helm](https://helm.sh/) must be installed to use the charts. Please refer to Helm's [documentation](https://helm.sh/docs/chart_template_guide/getting_started/) to get started.
 
-Once Helm is set up properly, you can install charts as follows:
+Once Helm is set up properly, add the repository as follows:
 
 ```bash
-helm upgrade -i -n YOUR_NAMESPACE APP_NAME  oci://public.ecr.aws/i9x0g0r1/CHART_NAME
+helm repo add c8r https://cloudchipr.github.io/helm-charts
 ```
 
 You can then run `helm search repo c8r` to see the charts.
