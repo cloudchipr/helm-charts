@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-health-check"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-health-check"
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: health-check-job
+        image: "curlimages/curl"
+        command:
+         - /bin/sh
+        args:
+          - '-c'
+          - |
+            echo "status_check{status=\"installed\",cluster_id=\"{{ include "clusterId" . }}\",instance=\"{{ include "clusterId" . }}\"} 1" | curl --data-binary @- -H "Authorization: Bearer {{ include "bearerToken" . }}" https://metrics.cloudchipr.dev/api/v1/status/metrics/job/hook-status/cluster_id/{{ include "clusterId" . }}
