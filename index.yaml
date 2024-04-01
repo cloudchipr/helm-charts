@@ -1,26 +1,20 @@
 apiVersion: v1
 entries:
-  c8r-opencost:
+  c8r-agent:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2023-11-09T18:27:55.372480354+04:00"
-    dependencies:
-    - condition: prometheusServer.enabled
-      name: prometheus
-      repository: https://prometheus-community.github.io/helm-charts
-      version: 25.*
-    - condition: openCost.enabled
-      name: opencost
-      repository: https://opencost.github.io/opencost-helm-chart
-      version: 1.*
-    digest: 2805be1e7c0ecb5ef4ff147c3c256182e6352b337fa749b76878e5cac109a826
-    name: c8r-opencost
-    sources:
-    - https://github.com/prometheus-community/helm-charts
-    - https://github.com/grafana/helm-charts
-    - https://opencost.github.io/opencost-helm-chart
+    created: "2024-04-01T21:35:18.867886935+04:00"
+    description: Cloudchipr SaaS Platform Agent For Metrics
+    digest: 421ec1ed6cf478b41cca9a8f25052610cbf9cc378865e614bd5472b93bda522a
+    icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
+    keywords:
+    - OpenCost
+    - Cloudchipr
+    - Prometheus
+    kubeVersion: '>= 1.19.0-0'
+    name: c8r-agent
     type: application
     urls:
-    - https://cloudchipr.github.io/helm-charts/c8r-opencost-0.1.0.tgz
+    - c8r-agent-0.1.0.tgz
     version: 0.1.0
-generated: "2023-11-09T18:27:55.366405436+04:00"
+generated: "2024-04-01T21:35:18.866557834+04:00"
