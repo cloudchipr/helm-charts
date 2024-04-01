@@ -1,0 +1,257 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- if .Values.deployment.name }}
+  name: {{ .Values.deployment.name | toYaml | nindent 2 }}
+  {{- else }}
+  name: {{ include "chart.name" . }}
+  {{- end }}
+  namespace: {{ include "c8rAgent.namespace" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    {{- with .Values.deployment.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.deployment.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "chart.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "chart.name" . }}
+        {{- with .Values.deployment.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        {{- with .Values.deployment.annotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ default "c8r-agent-sa" .Values.serviceAccount.name }}
+      volumes:
+        - name: prom-agent-config
+          secret:
+            secretName: {{ include "chart.name" . }}-config
+            defaultMode: 420
+            items:
+            - key: .secret-file.yml
+              path: prometheus.yml
+      containers:
+        - name: c8r-prometheus-server
+          image: "{{ .Values.imageRegistry | default "quay.io" }}/{{ .Values.deployment.c8rPrometheuServer.image | default "prometheus/prometheus" }}:{{ .Values.deployment.c8rPrometheuServer.tag | default "v2.47.2" }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          {{- if .Values.deployment.c8rPrometheuServer.command }}
+          command: {{ .Values.deployment.c8rPrometheuServer.command | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.deployment.c8rPrometheuServer.args }}
+          args: {{ .Values.deployment.c8rPrometheuServer.args | toYaml | nindent 12 }}
+          {{- end }}
+          {{- with .Values.deployment.c8rPrometheuServer.probes }}
+          {{- if .enabled }}
+          {{- if .readinessProbe }}
+          readinessProbe:
+            {{- toYaml .readinessProbe | nindent 12 }}
+          {{- else }}
+          readinessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 2
+          {{- end }}
+          {{- if .livenessProbe }}
+          livenessProbe:
+            {{- toYaml .livenessProbe | nindent 12 }}
+          {{- else }}
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 2
+          {{- end }}
+          {{- if .startupProbe }}
+          startupProbe:
+            {{- toYaml .startupProbe | nindent 12 }}
+          {{- else }}
+          startupProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: prom-agent-config
+              readOnly: true
+              mountPath: "/etc/prometheus"
+          resources:
+            {{- toYaml .Values.deployment.c8rPrometheuServer.resources | nindent 12 }}
+
+        - name: c8r-kube-sate-metrics
+          image: "{{ .Values.imageRegistry | default "registry.k8s.io" }}/{{ .Values.deployment.c8rKubeStateMetrics.image | default "kube-state-metrics/kube-state-metrics" }}:{{ .Values.deployment.c8rKubeStateMetrics.tag | default "v2.10.0" }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          {{- if .Values.deployment.c8rKubeStateMetrics.command }}
+          command: {{ .Values.deployment.c8rKubeStateMetrics.command | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.deployment.c8rKubeStateMetrics.args }}
+          args: {{ .Values.deployment.c8rKubeStateMetrics.args | toYaml | nindent 12 }}
+          {{- end }}
+          {{- with .Values.deployment.c8rKubeStateMetrics.probes }}
+          {{- if .enabled }}
+
+          {{- if .readinessProbe }}
+          readinessProbe:
+            {{- toYaml .readinessProbe | nindent 12 }}
+          {{- else }}
+          readinessProbe:
+            httpGet:
+              path: /-/healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 2
+          {{- end }}
+          {{- if .livenessProbe }}
+          livenessProbe:
+            {{- toYaml .livenessProbe | nindent 12 }}
+          {{- else }}
+          livenessProbe:
+            httpGet:
+              path: /-/healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 2
+          {{- end }}
+          {{- if .startupProbe }}
+          startupProbe:
+            {{- toYaml .startupProbe | nindent 12 }}
+          {{- else }}
+          startupProbe:
+            httpGet:
+              path: /-/healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.deployment.c8rKubeStateMetrics.resources | nindent 12 }}
+
+        - name: c8r-open-cost
+          image: "{{ .Values.imageRegistry | default "quay.io" }}/{{ .Values.deployment.c8rOpenCost.image | default "kubecost1/kubecost-cost-model" }}:{{ .Values.deployment.c8rOpenCost.tag | default "latest" }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          env:
+          - name: CLUSTER_ID
+            value: {{ .Values.cluster_id | required "cluster_id is required." }}
+          - name: PROMETHEUS_SERVER_ENDPOINT
+            value: "http://localhost:9090"
+          {{- if .Values.deployment.c8rOpenCost.command }}
+          command: {{ .Values.deployment.c8rOpenCost.command | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.deployment.c8rOpenCost.args }}
+          args: {{ .Values.deployment.c8rOpenCost.args | toYaml | nindent 12 }}
+          {{- end }}
+          {{- with .Values.deployment.c8rOpenCost.probes }}
+          {{- if .enabled }}
+          {{- if .readinessProbe }}
+          readinessProbe:
+            {{- toYaml .readinessProbe | nindent 12 }}
+          {{- else }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 9003
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 2
+          {{- end }}
+          {{- if .livenessProbe }}
+          livenessProbe:
+            {{- toYaml .livenessProbe | nindent 12 }}
+          {{- else }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 9003
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 2
+          {{- end }}
+          {{- if .startupProbe }}
+          startupProbe:
+            {{- toYaml .startupProbe | nindent 12 }}
+          {{- else }}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 9003
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.deployment.c8rOpenCost.resources | nindent 12 }}
+
+        - name: c8r-agent
+          image: "{{ .Values.imageRegistry | default "ghcr.io" }}/{{ .Values.deployment.c8rAgent.image | default "cloudchipr/c8r-agent" }}:{{ .Values.deployment.c8rAgent.tag | default "v0.1.0" }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          env:
+          - name: C8R_TOKEN
+            value: {{ .Values.c8r_token | required "c8r_token is required." }}
+          {{- if .Values.deployment.c8rAgent.command }}
+          command: {{ .Values.deployment.c8rAgent.command | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.deployment.c8rAgent.args }}
+          args: {{ .Values.deployment.c8rAgent.args | toYaml | nindent 12 }}
+          {{- end }}
+
+          resources:
+            {{- toYaml .Values.deployment.c8rAgent.resources | nindent 12 }}
+
+      nodeSelector:
+        {{- toYaml .Values.deployment.nodeSelector | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.deployment.affinity | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.deployment.tolerations | nindent 8 }}

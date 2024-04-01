@@ -1,0 +1,213 @@
+## @section General Configuration
+
+## @param namespaceOverride Overrides the default namespace where the chart will be installed (Optional).
+namespaceOverride: ""
+
+## @param replicaCount Number of replicas for the deployment.
+replicaCount: 1
+
+## @param imagePullPolicy Image pull policy (Always, IfNotPresent, Never).
+imagePullPolicy: Always
+
+## @param imageRegistry Default registry for all images (Optional).
+imageRegistry: ""
+
+## @param cluster_id Identifier for cluster. (Required).
+cluster_id: ""
+
+## @param c8r_token Token to authenticate with C8R API. (Required).
+c8r_token: ""
+
+## @section RBAC Configuration
+rbac:
+  ## @param rbac.create If true, create & use RBAC resources
+  create: true
+
+  ## Set to a rolename to use existing role - skipping role creating - but still doing serviceaccount and rolebinding to it, rolename set here.
+  ## useExistingRole: your-existing-role
+
+  ## @param rbac.useClusterRole If set to false - Run without Cluteradmin privs needed - ONLY works if namespace is also set (if useExistingRole is set this name is used as ClusterRole or Role to bind to)
+  useClusterRole: true
+
+  ## @param rbac.extraRules Add permissions for CustomResources' apiGroups in Role/ClusterRole. Should be used in conjunction with Custom Resource State Metrics configuration
+  ## Example:
+  ## - apiGroups: ["monitoring.coreos.com"]
+  ##   resources: ["prometheuses"]
+  ##   verbs: ["list", "watch"]
+  extraRules: []
+
+
+## @section Service Account Configuration
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created, require rbac true
+  create: true
+
+  ## @param serviceAccount.name The name of the ServiceAccount to use.
+  ## If not set and create is true, a name is generated using the fullname template
+  name:
+
+  ## @param serviceAccount.imagePullSecrets Reference to one or more secrets to be used when pulling images
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imagePullSecrets: []
+
+  ## @param serviceAccount.annotations ServiceAccount annotations.
+  ## Use case: AWS EKS IAM roles for service accounts
+  ## ref: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
+  annotations: {}
+
+
+## @section Deployment Configuration
+## Configurations for different components like Opencost, proxy, and redis update.
+
+deployment:
+  ## @param deployment.labels Extra labels for the service.
+  labels: {}
+
+  ## @param deployment.annotations Annotations for the service.
+  annotations: {}
+
+  ## @param deployment.nodeSelector Node Selector labels for pod assignment (Optional).
+  nodeSelector: {}
+
+  ## @param deployment.affinity Affinity settings for pod assignment (Optional).
+  affinity: {}
+
+  ## @param deployment.tolerations Tolerations for pod assignment (Optional).
+  tolerations: []
+
+  ## @section Prometheus Container Configuration
+
+  c8rPrometheuServer:
+    ## @param deployment.c8rPrometheuServer.name Container name for the Opencost component (Optional).
+    name: ""
+
+    ## @param deployment.c8rPrometheuServer.image Docker image for the Opencost.
+    image: ""
+
+    ## @param deployment.c8rPrometheuServer.tag Docker image tag for the Opencost.
+    tag: ""
+
+    ## @param deployment.c8rPrometheuServer.command Command for Opencost container.
+    command: []
+
+    ## @param deployment.c8rPrometheuServer.args Args for Opencost container.
+    args: []
+
+    ## @param deployment.c8rPrometheuServer.resources CPU/Memory resource requests/limits.
+    resources: {}
+
+    ## Health check probes configuration.
+    probes:
+      ## @param deployment.c8rPrometheuServer.probes.enabled Enable/Disable Probes for pod.
+      enabled: true
+
+      ## @param deployment.c8rPrometheuServer.probes.readinessProbe Custom readiness probe configuration.
+      readinessProbe: {}
+
+      ## @param deployment.c8rPrometheuServer.probes.livenessProbe Custom liveness probe configuration.
+      livenessProbe: {}
+
+      ## @param deployment.c8rPrometheuServer.probes.startupProbe Custom startup probe configuration.
+      startupProbe: {}
+
+  ## @section Kube-State-Metrics Container Configuration
+
+  c8rKubeStateMetrics:
+    ## @param deployment.c8rKubeStateMetrics.name Container name for the kube-state-metrics component (Optional).
+    name: ""
+
+    ## @param deployment.c8rKubeStateMetrics.image Docker image for the proxy.
+    image: kube-state-metrics/kube-state-metrics
+
+    ## @param deployment.c8rKubeStateMetrics.tag Docker image tag for the proxy.
+    tag: "v2.10.0"
+
+    ## @param deployment.c8rKubeStateMetrics.command Command for Opencost container.
+    command: []
+
+    ## @param deployment.c8rKubeStateMetrics.args Args for Opencost container.
+    args: []
+
+    ## Health check probes configuration.
+    probes:
+      ## @param deployment.c8rKubeStateMetrics.probes.enabled Enable/Disable Probes for pod.
+      enabled: true
+
+      ## @param deployment.c8rKubeStateMetrics.probes.readinessProbe Custom readiness probe configuration.
+      readinessProbe: {}
+
+      ## @param deployment.c8rKubeStateMetrics.probes.livenessProbe Custom liveness probe configuration.
+      livenessProbe: {}
+
+      ## @param deployment.c8rKubeStateMetrics.probes.startupProbe Custom startup probe configuration.
+      startupProbe: {}
+
+  ## @section Open Cost Container Configuration
+
+  c8rOpenCost:
+    ## @param deployment.c8rOpenCost.name Deployment name for the OpenCost component (Optional).
+    name: ""
+
+    ## @param deployment.c8rOpenCost.image Docker image for the OpenCost.
+    image: ""
+
+    ## @param deployment.c8rOpenCost.tag Docker image tag for the OpenCost.
+    tag: ""
+
+    ## @param deployment.c8rOpenCost.command Command for Opencost container.
+    command: []
+
+    ## @param deployment.c8rOpenCost.args Args for Opencost container.
+    args: []
+
+    ## @param deployment.c8rOpenCost.resources CPU/Memory resource requests/limits.
+    resources: {}
+
+    ## Health check probes configuration.
+    probes:
+      ## @param deployment.c8rOpenCost.probes.enabled Enable/Disable Probes for pod.
+      enabled: true
+
+      ## @param deployment.c8rOpenCost.probes.readinessProbe Custom readiness probe configuration.
+      readinessProbe: {}
+
+      ## @param deployment.c8rOpenCost.probes.livenessProbe Custom liveness probe configuration.
+      livenessProbe: {}
+
+      ## @param deployment.c8rOpenCost.probes.startupProbe Custom startup probe configuration.
+      startupProbe: {}
+
+  ## @section C8R Agent Configuration
+
+  c8rAgent:
+    ## @param deployment.c8rAgent.name Deployment name for the C8R Agent component (Optional).
+    name: ""
+
+    ## @param deployment.c8rAgent.image Docker image for the C8R Agent
+    image: ""
+
+    ## @param deployment.c8rAgent.tag Docker image tag for the OpenCost.
+    tag: ""
+
+    ## @param deployment.c8rAgent.command Command for C8R Agent container.
+    command: []
+
+    ## @param deployment.c8rAgent.args Args for C8R Agent container.
+    args: []
+
+    ## @param deployment.c8rAgent.resources CPU/Memory resource requests/limits.
+    resources: {}
+
+    ## Health check probes configuration.
+    probes:
+      ## @param deployment.c8rAgent.probes.enabled Enable/Disable Probes for pod.
+      enabled: true
+
+      ## @param deployment.c8rAgent.probes.readinessProbe Custom readiness probe configuration.
+      readinessProbe: {}
+
+      ## @param deployment.c8rAgent.probes.livenessProbe Custom liveness probe configuration.
+      livenessProbe: {}
+
+      ## @param deployment.c8rAgent.probes.startupProbe Custom startup probe configuration.
+      startupProbe: {}
