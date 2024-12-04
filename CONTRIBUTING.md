@@ -92,3 +92,4 @@ Then, go to the original repository and create a pull request. Be sure to provid
 Your pull request will be reviewed by project maintainers. They may suggest changes or improvements. Be responsive to feedback and be prepared to make necessary revisions.
 
 >*NOTE: See also [Prometheus Helm Charts Contributing Guidelines](https://github.com/prometheus-community/helm-charts/blob/main/CONTRIBUTING.md)*
+>*NOTE: See also [Deepgram Helm Charts Contributing Guidelines](https://github.com/deepgram/self-hosted-resources/blob/main/CONTRIBUTING.md)*

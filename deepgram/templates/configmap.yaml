@@ -1,0 +1,134 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ (printf "%s-license-proxy-config" .Release.Name) }}
+  labels:
+  {{- include "labelsLicenseProxy" . | nindent 4 }}
+data:
+  license-proxy.toml: |
+    [server]
+      host = "{{ .Values.licenseProxy.host | default "0.0.0.0" }}"
+      port = {{ .Values.licenseProxy.serverPort | default 8443 }}
+      base_url = "{{ .Values.licenseProxy.baseUrl | default "/" }}"
+      status_port = {{ .Values.licenseProxy.statusPort | default 8080 }}
+---
+
+{{- $licenseProxyUrl := printf "https://%s.%s.svc.cluster.local:%d" (default (printf "%s-license-proxy" .Release.Name) .Values.licenseProxy.service.name) .Release.Namespace (default 8443 .Values.licenseProxy.serverPort) }}
+{{- $standardUrl := "https://localhost:9090/v2" }}
+
+{{- if eq .Values.engine.mode "deployment" }}
+  {{- $standardUrl = printf "https://%s.%s.svc.cluster.local:%d/v2" (default (printf "%s-engine" .Release.Name) .Values.engine.service.name) .Release.Namespace (default 9090 .Values.engine.service.serverPort) }}
+{{- else if eq .Values.engine.mode "sidecar" }}
+  {{- $standardUrl = printf "https://localhost:%d/v2" (default 9090 .Values.engine.serverPort) }}
+{{- end }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ (printf "%s-api-config" .Release.Name) }}
+  labels:
+  {{- include "labelsApi" . | nindent 4 }}
+data:
+  api.toml: |
+    [license]
+      server_url = [
+        "{{ $licenseProxyUrl }}","https://license.deepgram.com"
+      ]
+
+    [server]
+      base_url = "{{ .Values.api.config.server.baseUrl | default "/v1" }}"
+      host = "{{ .Values.api.config.server.host | default "0.0.0.0" }}"
+      port = {{ .Values.api.config.server.port | default .Values.api.serverPort | default "8080"  }}
+      callback_conn_timeout = "{{ .Values.api.config.server.callback_conn_timeout | default "1s" }}"
+      callback_timeout = "{{ .Values.api.config.server.callback_timeout | default "10s" }}"
+      fetch_conn_timeout = "{{ .Values.api.config.server.fetch_conn_timeout | default "1s" }}"
+      fetch_timeout = "{{ .Values.api.config.server.fetch_timeout | default "60s" }}"
+
+    {{- if .Values.api.config.resolver }}
+    [resolver]
+      {{- .toYaml  .Values.api.config.resolver | nindent 6 }}
+    {{- end }}
+
+    [features]
+      topic_detection = {{ .Values.api.config.features.topic_detection | default true }}
+      summarization = {{ .Values.api.config.features.summarization | default true }}
+      entity_detection = {{ .Values.api.config.features.entity_detection | default false }}
+      entity_redaction = {{ .Values.api.config.features.entity_redaction | default false }}
+      speak_streaming = {{ .Values.api.config.features.speak_streaming | default true }}
+
+      {{- if .Values.api.config.features.diskBufferPath }}
+      disk_buffer_path = "{{ .Values.api.config.features.disk_buffer_path }}"
+      {{- end }}
+
+    [[driver_pool.standard]]
+      url = "{{ $standardUrl }}"
+      timeout_backoff = {{ .Values.api.config.driver_pool.standard.timeout_backoff | default 1.2 }}
+      retry_sleep = "{{ .Values.api.config.driver_pool.standard.retry_sleep | default "2s" }}"
+      retry_backoff = {{ .Values.api.config.driver_pool.standard.retry_backoff | default 1.6 }}
+      max_response_size = {{ int .Values.api.config.driver_pool.standard.max_response_size | default  1073741824 }}
+
+---
+
+{{- $licenseProxyUrl := printf "https://%s.%s.svc.cluster.local:%d" (default (printf "%s-license-proxy" .Release.Name) .Values.licenseProxy.service.name) .Release.Namespace (default 8443 .Values.licenseProxy.serverPort) }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ (printf "%s-engine-config" .Release.Name) }}
+  labels:
+  {{- include "labelsEngine" . | nindent 4 }}
+data:
+  engine.toml: |
+    {{- if .Values.engine.config.server.max_active_requests }}
+    max_active_requests = {{ .Values.engine.config.server.max_active_requests }}
+    {{- end }}
+
+    [license]
+      server_url = [
+        "{{ $licenseProxyUrl }}","https://license.deepgram.com"
+      ]
+
+    [server]
+      host = "{{ .Values.engine.config.server.host | default "0.0.0.0" }}"
+      port = {{ .Values.engine.config.server.port | default .Values.engine.serverPort | default "9090"  }}
+
+    [metrics_server]
+      host = "{{ .Values.engine.config.metrics_server.host | default "0.0.0.0" }}"
+      port = {{ .Values.engine.config.metrics_server.port | default .Values.engine.metricsPort | default "9991"  }}
+
+    [model_manager]
+    {{- if .Values.engine.config.model_manager.search_paths }}
+      search_paths = [
+        {{- toYaml .Values.engine.config.model_manager.search_paths | nindent 8 }}
+      ]
+    {{- else }}
+      search_paths = [
+        "/models"
+      ]
+    {{- end }}
+
+    [features]
+      multichannel = {{ .Values.engine.config.features.multichannel | default true }}
+      language_detection = {{ .Values.engine.config.features.language_detection | default true }}
+
+    [chunking.batch]
+      {{- if .Values.engine.config.chunking_batch.min_duration }}
+      min_duration = {{ .Values.engine.config.chunking_batch.min_duration }}
+      {{- end }}
+      {{- if .Values.engine.config.chunking_batch.max_duration }}
+      max_duration = {{ .Values.engine.config.chunking_batch.max_duration }}
+      {{- end }}
+
+    [chunking.streaming]
+      {{- if .Values.engine.config.chunking_streaming.min_duration }}
+      min_duration = {{ .Values.engine.config.chunking_streaming.min_duration }}
+      {{- end }}
+      {{- if .Values.engine.config.chunking_streaming.max_duration }}
+      max_duration = {{ .Values.engine.config.chunking_streaming.max_duration }}
+      {{- end }}
+      step = {{ .Values.engine.config.chunking_streaming.step | default 0.5 }}
+
+    [half_precision]
+      state = "{{ .Values.engine.config.half_precision.state | default "auto" }}"
+
+---

@@ -1,0 +1,61 @@
+{{- if and .Values.persistance.enabled (not .Values.persistance.existingClaimName) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ (.Values.persistance.name | default (printf "%s-models-pvc" .Release.Name)) }}
+  namespace: {{ include "namespace" . }}
+  {{- if .Values.persistance.labels }}
+  labels:
+    {{- toYaml .Values.persistance.labels | nindent 4 }}
+  {{- end }}
+  {{- if .Values.persistance.annotations }}
+  annotations:
+    {{- toYaml .Values.persistance.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+  {{- toYaml .Values.persistance.accessModes | nindent 4 | required "accessModes is required." }}
+  resources:
+    requests:
+      storage: {{ .Values.persistance.size | quote | default "10Gi" }}
+  storageClassName: {{ .Values.persistance.storageClassName }}
+  volumeName: {{ (.Values.persistance.name | default (printf "%s-models-pv" .Release.Name)) }}
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ (.Values.persistance.name | default (printf "%s-models-pv" .Release.Name)) }}
+  {{- if .Values.persistance.labels }}
+  labels:
+    {{- toYaml .Values.persistance.labels | nindent 4 }}
+  {{- end }}
+  {{- if .Values.persistance.annotations }}
+  annotations:
+    {{- toYaml .Values.persistance.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+  {{- toYaml .Values.persistance.accessModes | nindent 4 | required "accessModes is required." }}
+  capacity:
+    storage: {{ .Values.persistance.size | quote | default "10Gi" }}
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: {{ (.Values.persistance.name | default (printf "%s-models-pvc" .Release.Name)) }}
+    namespace: {{ include "namespace" . }}
+  csi:
+    driver: {{ .Values.persistance.driver | required "driver is required." }}
+    volumeHandle: {{ .Values.persistance.volumeHandle | required "volumeHandle is required." }}
+  {{- if .Values.persistance.mountOptions }}
+  mountOptions:
+  {{- toYaml .Values.persistance.mountOptions | nindent 4 }}
+  {{- else }}
+  mountOptions:
+  - implicit-dirs
+  {{- end }}
+  storageClassName: {{ .Values.persistance.storageClassName }}
+{{- end -}}
+{{/*
+*/}}

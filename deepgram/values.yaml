@@ -1,0 +1,560 @@
+## @param imagePullSecrets List of secrets for pulling images from private registries.
+imagePullSecrets: []
+
+## @param namespaceOverride Override the chart namespace.
+namespaceOverride: ""
+
+## @param imagePullPolicy Policy for pulling container images.
+imagePullPolicy: ""
+
+## @param terminationGracePeriodSeconds Duration in seconds that Kubernetes waits before forcefully terminating the container during a shutdown.
+terminationGracePeriodSeconds: ""
+
+## @section License Proxy Configuration
+licenseProxy:
+
+  ## @param licenseProxy.imageRegistry Image registry for the License Proxy.
+  imageRegistry: ""
+
+  ## @param licenseProxy.imageRepository Image repository for the License Proxy.
+  imageRepository: ""
+
+  ## @param licenseProxy.imageTag Image tag for the License Proxy.
+  imageTag: ""
+
+  ## @param licenseProxy.name Name of the License Proxy deployment.
+  name: ""
+
+  ## @param licenseProxy.labels Labels for the License Proxy pods.
+  labels: {}
+
+  ## @param licenseProxy.annotations Annotations for the License Proxy pods.
+  annotations: {}
+
+  ## @param licenseProxy.replicaCount Number of replicas for the License Proxy.
+  replicaCount: ""
+
+  ## @param licenseProxy.podAnnotations Annotations for the License Proxy pod.
+  podAnnotations: {}
+
+  ## @param licenseProxy.automountServiceAccountToken Boolean indicating whether to auto-mount the service account token.
+  automountServiceAccountToken: false
+
+  ## @param licenseProxy.podSecurityContext Security context for the License Proxy pod.
+  podSecurityContext: {}
+
+  ## @param licenseProxy.serviceAccountName Name of the service account used by License Proxy.
+  serviceAccountName: ""
+
+  ## @param licenseProxy.nodeSelector Node selector for License Proxy pods.
+  nodeSelector: {}
+
+  ## @param licenseProxy.affinity Affinity rules for License Proxy pods.
+  affinity: {}
+
+  ## @param licenseProxy.tolerations Tolerations for License Proxy pods.
+  tolerations: []
+
+  ## @param licenseProxy.command Command to override the License Proxy container's default entrypoint.
+  command: []
+
+  ## @param licenseProxy.args Arguments to pass to the License Proxy container.
+  args: []
+
+  ## @param licenseProxy.readinessProbe Readiness probe configuration.
+  readinessProbe: {}
+
+  ## @param licenseProxy.livenessProbe Liveness probe configuration.
+  livenessProbe: {}
+
+  ## @param licenseProxy.containerSecurityContext Security context for License Proxy containers.
+  containerSecurityContext: {}
+
+  ## @param licenseProxy.serverPort Port for serving traffic.
+  serverPort: ""
+
+  ## @param licenseProxy.statusPort Port for serving status.
+  statusPort: ""
+
+  ## @param licenseProxy.host Host name for the License Proxy.
+  host: ""
+
+  ## @param licenseProxy.baseUrl Base URL for accessing the License Proxy.
+  baseUrl: ""
+
+  ## @param licenseProxy.env Environment variables for the License Proxy.
+  env: []
+
+  ## @param licenseProxy.envFrom Environment variables from external sources.
+  envFrom: []
+
+  ## @param licenseProxy.resources Resource limits and requests for License Proxy pods.
+  resources: {}
+
+  ## @param licenseProxy.containerLifeCycle Configuration for container lifecycle hooks, such as post-start or pre-stop.
+  containerLifeCycle: {}
+
+  ## @section License Proxy Service Configuration
+  service:
+
+    ## @param licenseProxy.service.name Name of the License Proxy service.
+    name: ""
+
+    ## @param licenseProxy.service.labels Labels for the License Proxy service.
+    labels: {}
+
+    ## @param licenseProxy.service.annotations Annotations for the License Proxy service.
+    annotations: {}
+
+    ## @param licenseProxy.service.serverPort Server port for License Proxy service.
+    serverPort: ""
+
+    ## @param licenseProxy.service.statusPort Status port for License Proxy service.
+    statusPort: ""
+
+    ## @param licenseProxy.service.type Type of service to create.
+    type: ""
+
+    ## @param licenseProxy.service.loadBalancerIP Static IP for LoadBalancer, if applicable.
+    loadBalancerIP: ""
+
+    ## @param licenseProxy.service.externalTrafficPolicy External traffic policy for License Proxy service.
+    externalTrafficPolicy: ""
+
+    ## @param licenseProxy.service.internalTrafficPolicy Internal traffic policy for License Proxy service.
+    internalTrafficPolicy: ""
+
+## @section API Configuration
+api:
+
+  ## @param api.imageRegistry Image registry for the API.
+  imageRegistry: ""
+
+  ## @param api.imageRepository Image repository for the API.
+  imageRepository: ""
+
+  ## @param api.imageTag Image tag for the API.
+  imageTag: ""
+
+  ## @param api.name Name of the API deployment.
+  name: ""
+
+  ## @param api.labels Labels for the API pods.
+  labels: {}
+
+  ## @param api.annotations Annotations for the API pods.
+  annotations: {}
+
+  ## @param api.replicaCount Number of replicas for the API.
+  replicaCount: ""
+
+  ## @param api.podAnnotations Annotations for the API pod.
+  podAnnotations: {}
+
+  ## @param api.automountServiceAccountToken Boolean indicating whether to auto-mount the service account token.
+  automountServiceAccountToken: false
+
+  ## @param api.podSecurityContext Security context for the API pod.
+  podSecurityContext: {}
+
+  ## @param api.serviceAccountName Name of the service account used by the API.
+  serviceAccountName: ""
+
+  ## @param api.nodeSelector Node selector for API pods.
+  nodeSelector: {}
+
+  ## @param api.affinity Affinity rules for API pods.
+  affinity: {}
+
+  ## @param api.tolerations Tolerations for API pods.
+  tolerations: []
+
+  ## @param api.command Command to override the API container's default entrypoint.
+  command: []
+
+  ## @param api.args Arguments to pass to the API container.
+  args: []
+
+  ## @param api.readinessProbe Readiness probe configuration.
+  readinessProbe: {}
+
+  ## @param api.livenessProbe Liveness probe configuration.
+  livenessProbe: {}
+
+  ## @param api.containerSecurityContext Security context for API containers.
+  containerSecurityContext: {}
+
+  ## @param api.serverPort Port for serving traffic.
+  serverPort: ""
+
+  ## @param api.env Environment variables for the API.
+  env: []
+
+  ## @param api.envFrom Environment variables from external sources.
+  envFrom: []
+
+  ## @param api.resources Resource limits and requests for API pods.
+  resources: {}
+
+  ## @param api.containerLifeCycle Configuration for container lifecycle hooks, such as post-start or pre-stop.
+  containerLifeCycle: {}
+
+  ## @section API Configuration Details
+  config:
+
+    ## @param api.config.server.base_url Base URL for API server.
+    server:
+      base_url: "/v1"
+
+      ## @param api.config.server.host Host for the API server.
+      host: "0.0.0.0"
+
+      ## @param api.config.server.port Port for the API server.
+      port: ""
+
+      ## @param api.config.server.callback_conn_timeout Connection timeout for API callbacks.
+      callback_conn_timeout : "1s"
+
+      ## @param api.config.server.callback_timeout Timeout for API callbacks.
+      callback_timeout: "10s"
+
+      ## @param api.config.server.fetch_conn_timeout Connection timeout for fetching data.
+      fetch_conn_timeout: "1s"
+
+      ## @param api.config.server.fetch_timeout Timeout for fetching data.
+      fetch_timeout: "60s"
+
+    ## @param api.config.resolver Resolver configuration settings.
+    resolver: {}
+
+    features:
+      ## @param api.config.features.topic_detection Enable or disable topic detection feature.
+      topic_detection: true
+
+      ## @param api.config.features.summarization Enable or disable summarization feature.
+      summarization: true
+
+      ## @param api.config.features.entity_detection Enable or disable entity detection feature.
+      entity_detection: false
+
+      ## @param api.config.features.entity_redaction Enable or disable entity redaction feature.
+      entity_redaction: false
+
+      ## @param api.config.features.speak_streaming Enable or disable speak streaming feature.
+      speak_streaming: true
+
+    driver_pool:
+      standard:
+        ## @param api.config.driver_pool.standard.timeout_backoff Backoff factor for timeouts in seconds.
+        timeout_backoff: 1.2
+
+        ## @param api.config.driver_pool.standard.retry_sleep Sleep duration between retries in seconds.
+        retry_sleep: "2s"
+
+        ## @param api.config.driver_pool.standard.retry_backoff Backoff factor for retries.
+        retry_backoff: 1.6
+
+        ## @param api.config.driver_pool.standard.max_response_size Maximum response size in bytes.
+        max_response_size: 1073741824
+
+  ## @section API Service Configuration
+  service:
+    ## @param api.service.name Name of the API service.
+    name: ""
+
+    ## @param api.service.labels Labels for the API service.
+    labels: {}
+
+    ## @param api.service.annotations Annotations for the API service.
+    annotations: {}
+
+    ## @param api.service.serverPort Server port for API service.
+    serverPort: ""
+
+    ## @param api.service.statusPort Status port for API service.
+    statusPort: ""
+
+    ## @param api.service.type Type of service to create.
+    type: ""
+
+    ## @param api.service.loadBalancerIP Static IP for LoadBalancer, if applicable.
+    loadBalancerIP: ""
+
+    ## @param api.service.externalTrafficPolicy External traffic policy for API service.
+    externalTrafficPolicy: ""
+
+    ## @param api.service.internalTrafficPolicy Internal traffic policy for API service.
+    internalTrafficPolicy: ""
+
+## @section Engine Configuration
+engine:
+  ## @param engine.mode Deployment mode for the Engine.
+  mode: "deployment"
+
+  ## @param engine.imageRegistry Image registry for the Engine.
+  imageRegistry: ""
+
+  ## @param engine.imageRepository Image repository for the Engine.
+  imageRepository: ""
+
+  ## @param engine.imageTag Image tag for the Engine.
+  imageTag: ""
+
+  ## @param engine.name Name of the Engine deployment. Will be ignored if mode=sidecar.
+  name: ""
+
+  ## @param engine.labels Labels for the Engine pods. Will be ignored if mode=sidecar.
+  labels: {}
+
+  ## @param engine.annotations Annotations for the Engine pods. Will be ignored if mode=sidecar.
+  annotations: {}
+
+  ## @param engine.replicaCount Number of replicas for the Engine. Will be ignored if mode=sidecar.
+  replicaCount: ""
+
+  ## @param engine.podAnnotations Annotations for the Engine pod. Will be ignored if mode=sidecar.
+  podAnnotations: {}
+
+  ## @param engine.automountServiceAccountToken Boolean indicating whether to auto-mount the service account token.
+  automountServiceAccountToken: false
+
+  ## @param engine.podSecurityContext Security context for the Engine pod. Will be ignored if mode=sidecar.
+  podSecurityContext: {}
+
+  ## @param engine.serviceAccountName Name of the service account used by the Engine. Will be ignored if mode=sidecar.
+  serviceAccountName: ""
+
+  ## @param engine.nodeSelector Node selector for Engine pods. Will be ignored if mode=sidecar.
+  nodeSelector: {}
+
+  ## @param engine.affinity Affinity rules for Engine pods. Will be ignored if mode=sidecar.
+  affinity: {}
+
+  ## @param engine.tolerations Tolerations for Engine pods. Will be ignored if mode=sidecar.
+  tolerations: []
+
+  ## @param engine.command Command to override the Engine container's default entrypoint.
+  command: []
+
+  ## @param engine.args Arguments to pass to the Engine container.
+  args: []
+
+  ## @param engine.startupProbe Startup probe configuration.
+  startupProbe: {}
+
+  ## @param engine.readinessProbe Readiness probe configuration.
+  readinessProbe: {}
+
+  ## @param engine.livenessProbe Liveness probe configuration.
+  livenessProbe: {}
+
+  ## @param engine.containerSecurityContext Security context for Engine containers.
+  containerSecurityContext: {}
+
+  ## @param engine.serverPort Port for serving traffic.
+  serverPort: ""
+
+  ## @param engine.metricsPort Port for serving metrics.
+  metricsPort: ""
+
+  ## @param engine.env Environment variables for the Engine.
+  env: []
+
+  ## @param engine.envFrom Environment variables from external sources.
+  envFrom: []
+
+  ## @param engine.resources Resource limits and requests for Engine pods.
+  resources: {}
+
+  ## @param engine.containerLifeCycle Configuration for container lifecycle hooks, such as post-start or pre-stop.
+  containerLifeCycle: {}
+
+  ## @section Engine Configuration Details
+  config:
+
+    ## @param engine.config.server.host Host for the Engine server.
+    server:
+      host: "0.0.0.0"
+      ## @param engine.config.server.port Port for the Engine server.
+      port: ""
+      ## @param engine.config.server.max_active_requests Maximum number of active requests for the Engine server.
+      max_active_requests: ""
+
+    ## @param engine.config.metrics_server.host Host for the metrics server.
+    metrics_server:
+      host: "0.0.0.0"
+      ## @param engine.config.metrics_server.port Port for the metrics server.
+      port: ""
+
+    ## @param engine.config.model_manager.search_paths List of search paths for models.
+    model_manager:
+      search_paths:
+        # "/models",
+        # "/example"
+
+    features:
+      ## @param engine.config.features.multichannel Enable or disable multichannel feature.
+      multichannel: true
+
+      ## @param engine.config.features.language_detection Enable or disable language detection feature.
+      language_detection: true
+
+    chunking_batch:
+      ## @param engine.config.chunking_batch.min_duration Minimum duration for batch chunking.
+      min_duration: ""
+      ## @param engine.config.chunking_batch.max_duration Maximum duration for batch chunking.
+      max_duration: ""
+
+    chunking_streaming:
+      ## @param engine.config.chunking_streaming.min_duration Minimum duration for streaming chunking.
+      min_duration: ""
+      ## @param engine.config.chunking_streaming.max_duration Maximum duration for streaming chunking.
+      max_duration: ""
+      ## @param engine.config.chunking_streaming.step Step size for streaming chunking.
+      step: ""
+
+    ## @param engine.config.half_precision.state State for half precision mode.
+    half_precision:
+      state: "auto"
+
+  ## @section Engine Service Configuration
+  service:
+    ## @param engine.service.name Name of the Engine service. Will be ignored if mode=sidecar.
+    name: ""
+
+    ## @param engine.service.labels Labels for the Engine service. Will be ignored if mode=sidecar.
+    labels: {}
+
+    ## @param engine.service.annotations Annotations for the Engine service. Will be ignored if mode=sidecar.
+    annotations: {}
+
+    ## @param engine.service.serverPort Server port for Engine service. Will be ignored if mode=sidecar.
+    serverPort: ""
+
+    ## @param engine.service.statusPort Status port for Engine service. Will be ignored if mode=sidecar.
+    statusPort: ""
+
+    ## @param engine.service.type Type of service to create. Will be ignored if mode=sidecar.
+    type: ""
+
+    ## @param engine.service.loadBalancerIP Static IP for LoadBalancer, if applicable. Will be ignored if mode=sidecar.
+    loadBalancerIP: ""
+
+    ## @param engine.service.externalTrafficPolicy External traffic policy for Engine service. Will be ignored if mode=sidecar.
+    externalTrafficPolicy: ""
+
+    ## @param engine.service.internalTrafficPolicy Internal traffic policy for Engine service. Will be ignored if mode=sidecar.
+    internalTrafficPolicy: ""
+
+## @section Service Account Configuration
+serviceAccount:
+
+  ## @param serviceAccount.create Boolean indicating whether to create a new service account.
+  create: false
+
+  ## @param serviceAccount.name Name of the service account.
+  name: ""
+
+  ## @param serviceAccount.useExisting Name of an existing service account to use.
+  useExisting: ""
+
+  ## @param serviceAccount.labels Labels for the service account.
+  labels: {}
+
+  ## @param serviceAccount.annotations Annotations for the service account.
+  annotations: {}
+
+  ## @param serviceAccount.automountServiceAccountToken Boolean indicating whether to auto-mount the service account token.
+  automountServiceAccountToken: true
+
+## @section Persistence Configuration
+persistance:
+  ## @param persistance.enabled Boolean indicating whether persistence is enabled.
+  enabled: true
+
+  ## @param persistance.name Name of the persistent volume.
+  name: ""
+
+  ## @param persistance.driver Name of the storage driver.
+  driver: "gcsfuse.csi.storage.gke.io"
+
+  ## @param persistance.volumeHandle Identifier for the volume.
+  volumeHandle: ""
+
+  ## @param persistance.storageClassName Name of the storage class for the volume.
+  storageClassName: "gcs"
+
+  ## @param persistance.existingClaimName Name of an existing volume claim to use.
+  existingClaimName: ""
+
+  ## @param persistance.accessModes Access modes for the persistent volume.
+  accessModes:
+    - ReadWriteMany
+
+  ## @param persistance.size Requested size for the persistent volume.
+  size: "100Gi"
+
+## @section External Secrets Configuration
+externalSecrets:
+
+  ## @param externalSecrets.create Boolean indicating whether to create external secrets.
+  create: false
+
+  ## @param externalSecrets.apiVersion API version for external secrets.
+  apiVersion: ""
+
+  ## @param externalSecrets.name Name of the external secret.
+  name: ""
+
+  ## @param externalSecrets.labels Labels for the external secret.
+  labels: {}
+
+  ## @param externalSecrets.annotations Annotations for the external secret.
+  annotations: {}
+
+  ## @param externalSecrets.spec Specification details for the external secret.
+  spec: {}
+    # dataFrom:
+    #   - extract:
+    #       conversionStrategy: Default
+    #       decodingStrategy: None
+    #       key: kv/example/secret
+    # refreshInterval: 15s
+    # secretStoreRef:
+    #   kind: ClusterSecretStore
+    #   name: exampleSecretStore
+    # target:
+    #   creationPolicy: Owner
+    #   deletionPolicy: Retain
+
+serviceMonitor:
+  ## @param serviceMonitor.enabled Enable or disable the creation of ServiceMonitor for Prometheus monitoring.
+  enabled: false
+
+  ## @param serviceMonitor.name Custom name for the ServiceMonitor resource. If left empty, a default name will be used.
+  name: ""
+
+  ## @param serviceMonitor.labels Labels to be added to the ServiceMonitor metadata for identification.
+  labels: {}
+
+  ## @param serviceMonitor.annotations Annotations to be added to the ServiceMonitor metadata.
+  annotations: {}
+
+  ## @param serviceMonitor.matchLabels Selector labels to match services that should be monitored.
+  matchLabels:
+    ##foo: bar
+
+  ## @param serviceMonitor.namespaceSelector Namespace selector to determine which namespaces are monitored.
+  namespaceSelector: ""
+
+  ## @param serviceMonitor.port The port name to scrape metrics from. This should match the service port name.
+  port: ""
+
+  ## @param serviceMonitor.path HTTP path to scrape metrics from. Defaults to `/metrics` if not set.
+  path: ""
+
+  ## @param serviceMonitor.honorLabels Indicates whether to honor labels from the target service.
+  honorLabels: true
+
+  ## @param serviceMonitor.interval Interval at which metrics should be scraped. Default is "30s".
+  interval: "30s"

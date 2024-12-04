@@ -1,0 +1,12 @@
+apiVersion: v2
+name: "deepgram"
+version: 0.1.0
+kubeVersion: '>= 1.19.0-0'
+icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
+description: Deepgram Self Hosted Helm Chart Managed By Cloudchipr
+type: application
+keywords:
+  - "deepgram"
+  - "self-hosted"
+  - "Cloudchipr"
+appVersion: "0.1.0"

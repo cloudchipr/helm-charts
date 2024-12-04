@@ -32,7 +32,7 @@ Run the following command to install the chart
 
 ```bash
 helm upgrade -i c8r-agent -n c8r-agent c8r/c8r-agent \
-  --set cluster_id="YOUR_CLUSTER_ID" \ 
+  --set cluster_id="YOUR_CLUSTER_ID" \
   --set c8r_token="YOUR_API_TOKEN"
   --create-namespace
 ```
