@@ -169,11 +169,9 @@ spec:
             {{- toYaml .Values.deployment.c8rKubeStateMetrics.resources | nindent 12 }}
 
         - name: c8r-open-cost
-          image: "{{ .Values.imageRegistry | default "quay.io" }}/{{ .Values.deployment.c8rOpenCost.image | default "kubecost1/kubecost-cost-model" }}:{{ .Values.deployment.c8rOpenCost.tag | default "latest" }}"
+          image: "{{ .Values.imageRegistry | default "ghcr.io" }}/{{ .Values.deployment.c8rOpenCost.image | default "cloudchipr/opencost" }}:{{ .Values.deployment.c8rOpenCost.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           env:
-          - name: CLUSTER_ID
-            value: {{ .Values.cluster_id | required "cluster_id is required." }}
           - name: PROMETHEUS_SERVER_ENDPOINT
             value: "http://localhost:9090"
           {{- if .Values.deployment.c8rOpenCost.command }}
@@ -234,11 +232,11 @@ spec:
             {{- toYaml .Values.deployment.c8rOpenCost.resources | nindent 12 }}
 
         - name: c8r-agent
-          image: "{{ .Values.imageRegistry | default "ghcr.io" }}/{{ .Values.deployment.c8rAgent.image | default "cloudchipr/c8r-agent" }}:{{ .Values.deployment.c8rAgent.tag | default "v0.1.0" }}"
+          image: "{{ .Values.imageRegistry | default "ghcr.io" }}/{{ .Values.deployment.c8rAgent.image | default "cloudchipr/c8r-agent" }}:{{ .Values.deployment.c8rAgent.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           env:
-          - name: C8R_TOKEN
-            value: {{ .Values.c8r_token | required "c8r_token is required." }}
+          - name: C8R_API_KEY
+            value: {{ .Values.c8r_api_key | required "c8r_api_key is required." }}
           {{- if .Values.deployment.c8rAgent.command }}
           command: {{ .Values.deployment.c8rAgent.command | toYaml | nindent 12 }}
           {{- end }}

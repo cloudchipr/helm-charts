@@ -12,11 +12,8 @@ imagePullPolicy: Always
 ## @param imageRegistry Default registry for all images (Optional).
 imageRegistry: ""
 
-## @param cluster_id Identifier for cluster. (Required).
-cluster_id: ""
-
-## @param c8r_token Token to authenticate with C8R API. (Required).
-c8r_token: ""
+## @param c8r_api_key Token to authenticate with C8R API. (Required).
+c8r_api_key: ""
 
 ## @section RBAC Configuration
 rbac:

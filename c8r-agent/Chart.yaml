@@ -9,4 +9,4 @@ keywords:
 kubeVersion: '>= 1.19.0-0'
 name: c8r-agent
 type: application
-version: 0.1.0
+version: 0.1.1

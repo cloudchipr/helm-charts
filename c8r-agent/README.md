@@ -6,7 +6,6 @@ This chart deploys Cloudchipr Platform c8r-agent to your local cluster
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
-
 ## Requirements
 
 * Kubernetes >= [1.19](https://kubernetes.io/releases/)
@@ -34,8 +33,7 @@ Run the following command to install the chart
 
 ```bash
 helm upgrade -i c8r-agent -n c8r-agent c8r/c8r-agent \
-  --set cluster_id="YOUR_CLUSTER_ID" \
-  --set c8r_token="YOUR_API_TOKEN"
+  --set c8r_api_key="YOUR_API_TOKEN"
   --create-namespace
 ```
 
@@ -56,8 +54,7 @@ kubectl delete namespace c8r-opencost
 | `replicaCount`      | Number of replicas for the deployment.                                        | `1`                          |
 | `imagePullPolicy`   | Image pull policy (Always, IfNotPresent, Never).                              | `Always`                     |
 | `imageRegistry`     | Default registry for all images (Optional).                                   | `""`                         |
-| `cluster_id`        | Identifier for cluster. (Required).                                           | ``                           |
-| `c8r_token`         | Token to authenticate with C8R API. (Required).                               | ``                           |
+| `c8r_api_key`         | Api key to authenticate with C8R API. (Required).                               | ``                           |
 
 ### RBAC Configuration
 
@@ -144,4 +141,3 @@ kubectl delete namespace c8r-opencost
 | `deployment.c8rAgent.probes.readinessProbe` | Custom readiness probe configuration.                   | `{}`   |
 | `deployment.c8rAgent.probes.livenessProbe`  | Custom liveness probe configuration.                    | `{}`   |
 | `deployment.c8rAgent.probes.startupProbe`   | Custom startup probe configuration.                     | `{}`   |
-
