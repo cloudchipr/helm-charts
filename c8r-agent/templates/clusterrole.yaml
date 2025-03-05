@@ -31,6 +31,7 @@ rules:
   verbs:
   - list
   - watch
+  - get
 - apiGroups:
   - batch
   resources:
@@ -217,6 +218,24 @@ rules:
   verbs:
   - list
   - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes/metrics
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - nodes
+  - namespaces
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+
 
 {{ if $.Values.rbac.extraRules }}
 {{ toYaml $.Values.rbac.extraRules }}
