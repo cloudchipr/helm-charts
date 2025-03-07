@@ -21,6 +21,7 @@ data:
         static_configs:
           - targets: ["localhost:8080"]
 
+      {{- if .Values.nodeexporter.enabled }}
       - job_name: node-exporter
         honor_labels: true
         relabel_configs:
@@ -30,7 +31,7 @@ data:
             target_label: node
         kubernetes_sd_configs:
           - role: endpoints
-            {{- if .Values.nodeexporter.enabled }}
+            {{- if not .Values.nodeexporter.useExisting }}
             namespaces:
               own_namespace: true
             selectors:
@@ -44,6 +45,7 @@ data:
               - role: endpoints
                 field: metadata.name={{ .Values.nodeexporter.useExisting.name | required "nodeexporter.useExisting.name is required when enabled is false" }}
             {{- end }}
+        {{- end }}
 
       - job_name: opencost
         honor_labels: true

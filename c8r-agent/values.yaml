@@ -164,7 +164,7 @@ deployment:
 ## @param nodeexporter.enabled Enable/Disable Prometheus Node Exporter and modify its configuration.
 ## @param nodeexporter.useExisting Node Exporter service name and namespace to use when enabled is false.
 nodeexporter:
-  enabled: true
+  enabled: false
   useExisting: {}
     # name: ""
     # namespace: ""
