@@ -1,10 +1,153 @@
 apiVersion: v1
-kind: Secret
+kind: ConfigMap
 metadata:
   name: {{ include "chart.name" . }}-config
   namespace: {{ include "c8rAgent.namespace" . }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-type: Opaque
 data:
-  .secret-file.yml: Z2xvYmFsOgogIGV2YWx1YXRpb25faW50ZXJ2YWw6IDFtCiAgc2NyYXBlX2ludGVydmFsOiAxbQogIHNjcmFwZV90aW1lb3V0OiAxMHMKcnVsZV9maWxlczoKLSAvZXRjL2NvbmZpZy9yZWNvcmRpbmdfcnVsZXMueW1sCi0gL2V0Yy9jb25maWcvYWxlcnRpbmdfcnVsZXMueW1sCi0gL2V0Yy9jb25maWcvcnVsZXMKLSAvZXRjL2NvbmZpZy9hbGVydHMKc2NyYXBlX2NvbmZpZ3M6Ci0gam9iX25hbWU6ICdjOHIta3ViZS1zdGF0ZS1tZXRyaWNzJwogIHN0YXRpY19jb25maWdzOgogICAgLSB0YXJnZXRzOiBbJ2xvY2FsaG9zdDo4MDgwJ10KCi0gam9iX25hbWU6IGM4ci1vcGVuLWNvc3QKICBzdGF0aWNfY29uZmlnczoKICAgIC0gdGFyZ2V0czogWydsb2NhbGhvc3Q6OTAwMydd
+  prometheus.yaml: |
+    global:
+      evaluation_interval: 1m
+      scrape_interval: 1m
+      scrape_timeout: 10s
+    rule_files:
+      - /etc/config/recording_rules.yml
+      - /etc/config/alerting_rules.yml
+      - /etc/config/rules
+      - /etc/config/alerts
+    scrape_configs:
+      - job_name: kube-state-metrics
+        static_configs:
+          - targets: ["localhost:8080"]
+
+      - job_name: node-exporter
+        honor_labels: true
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_node_name
+            action: replace
+            target_label: node
+        kubernetes_sd_configs:
+          - role: endpoints
+            {{- if .Values.nodeexporter.enabled }}
+            namespaces:
+              own_namespace: true
+            selectors:
+              - role: endpoints
+                field: metadata.name={{ printf "%s-%s" .Release.Name "nodeexporter" }}
+            {{- else }}
+            namespaces:
+              names:
+                - {{ .Values.nodeexporter.useExisting.namespace | required "nodeexporter.useExisting.namespace is required when enabled is false" }}
+            selectors:
+              - role: endpoints
+                field: metadata.name={{ .Values.nodeexporter.useExisting.name | required "nodeexporter.useExisting.name is required when enabled is false" }}
+            {{- end }}
+
+      - job_name: opencost
+        honor_labels: true
+        scrape_interval: 1m
+        scrape_timeout: 10s
+        metrics_path: /metrics
+        scheme: http
+        static_configs:
+        - targets:
+          - localhost:9003
+
+      - job_name: kubelet-probes
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        metrics_path: /metrics/probes
+        scheme: https
+        honor_labels: true
+        honor_timestamps: true
+        relabel_configs:
+          - source_labels:
+              - __metrics_path__
+            action: replace
+            target_label: metrics_path
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        kubernetes_sd_configs:
+          - follow_redirects: true
+            role: endpoints
+            selectors:
+              - role: endpoints
+                label: app.kubernetes.io/managed-by=c8r-agent
+                field: metadata.name=c8r-agent-kubelet
+
+      - job_name: kubelet
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        honor_labels: true
+        honor_timestamps: true
+        scheme: https
+        relabel_configs:
+          - source_labels:
+              - __metrics_path__
+            action: replace
+            target_label: metrics_path
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        kubernetes_sd_configs:
+          - follow_redirects: true
+            role: endpoints
+            selectors:
+              - role: endpoints
+                label: app.kubernetes.io/managed-by=c8r-agent
+                field: metadata.name=c8r-agent-kubelet
+
+      - job_name: kubelet-cadvisor
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        honor_labels: true
+        honor_timestamps: true
+        scrape_interval: 10s
+        metric_relabel_configs:
+          - action: drop
+            regex: container_cpu_(cfs_throttled_seconds_total|load_average_10s|system_seconds_total|user_seconds_total)
+            source_labels:
+              - __name__
+          - action: drop
+            regex: container_fs_(io_current|io_time_seconds_total|io_time_weighted_seconds_total|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)
+            source_labels:
+              - __name__
+          - action: drop
+            regex: container_memory_(mapped_file|swap)
+            source_labels:
+              - __name__
+          - action: drop
+            regex: container_(file_descriptors|tasks_state|threads_max)
+            source_labels:
+              - __name__
+          - action: drop
+            regex: container_spec.*
+            source_labels:
+              - __name__
+          - action: drop
+            regex: .+;
+            source_labels:
+              - id
+              - pod
+        metrics_path: /metrics/cadvisor
+        scheme: https
+        relabel_configs:
+          - action: replace
+            source_labels:
+              - __metrics_path__
+            target_label: metrics_path
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_endpoint_address_target_name
+            target_label: node
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        kubernetes_sd_configs:
+          - follow_redirects: true
+            role: endpoints
+            selectors:
+              - role: endpoints
+                label: app.kubernetes.io/managed-by=c8r-agent
+                field: metadata.name=c8r-agent-kubelet
+

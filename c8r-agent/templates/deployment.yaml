@@ -35,22 +35,30 @@ spec:
     spec:
       serviceAccountName: {{ default "c8r-agent-sa" .Values.serviceAccount.name }}
       volumes:
-        - name: prom-agent-config
-          secret:
-            secretName: {{ include "chart.name" . }}-config
+        - name: prometheus-config
+          configMap:
+            name: {{ include "chart.name" . }}-config
             defaultMode: 420
-            items:
-            - key: .secret-file.yml
-              path: prometheus.yml
       containers:
         - name: c8r-prometheus-server
-          image: "{{ .Values.imageRegistry | default "quay.io" }}/{{ .Values.deployment.c8rPrometheuServer.image | default "prometheus/prometheus" }}:{{ .Values.deployment.c8rPrometheuServer.tag | default "v2.47.2" }}"
+          image: "{{ .Values.imageRegistry | default "quay.io" }}/{{ .Values.deployment.c8rPrometheuServer.image | default "prometheus/prometheus" }}:{{ .Values.deployment.c8rPrometheuServer.tag | default "v3.1.0" }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           {{- if .Values.deployment.c8rPrometheuServer.command }}
           command: {{ .Values.deployment.c8rPrometheuServer.command | toYaml | nindent 12 }}
           {{- end }}
           {{- if .Values.deployment.c8rPrometheuServer.args }}
           args: {{ .Values.deployment.c8rPrometheuServer.args | toYaml | nindent 12 }}
+          {{- else }}
+          args:
+            - --config.file=/etc/prometheus/prometheus.yaml
+            - --web.enable-lifecycle
+            - --web.enable-remote-write-receiver
+            - --enable-feature=memory-snapshot-on-shutdown
+            - --web.external-url=http://localhost:9090/
+            - --web.route-prefix=/
+            - --storage.tsdb.retention.time=2d
+            - --storage.tsdb.path=/prometheus
+            - --storage.tsdb.wal-compression
           {{- end }}
           {{- with .Values.deployment.c8rPrometheuServer.probes }}
           {{- if .enabled }}
@@ -101,7 +109,7 @@ spec:
           {{- end }}
           {{- end }}
           volumeMounts:
-            - name: prom-agent-config
+            - name: prometheus-config
               readOnly: true
               mountPath: "/etc/prometheus"
           resources:
@@ -174,8 +182,20 @@ spec:
           env:
           - name: PROMETHEUS_SERVER_ENDPOINT
             value: "http://localhost:9090"
+          {{- range $key, $val := .Values.deployment.c8rOpenCost.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{ end -}}
           {{- if .Values.deployment.c8rOpenCost.command }}
           command: {{ .Values.deployment.c8rOpenCost.command | toYaml | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo sleeping 60 seconds to wait for prometheus server to start
+              sleep 60
+              exec /go/bin/app "$@"
           {{- end }}
           {{- if .Values.deployment.c8rOpenCost.args }}
           args: {{ .Values.deployment.c8rOpenCost.args | toYaml | nindent 12 }}
@@ -191,7 +211,7 @@ spec:
               path: /healthz
               port: 9003
               scheme: HTTP
-            initialDelaySeconds: 5
+            initialDelaySeconds: 60
             timeoutSeconds: 1
             periodSeconds: 30
             successThreshold: 1
@@ -206,7 +226,7 @@ spec:
               path: /healthz
               port: 9003
               scheme: HTTP
-            initialDelaySeconds: 5
+            initialDelaySeconds: 60
             timeoutSeconds: 1
             periodSeconds: 30
             successThreshold: 1
@@ -221,7 +241,7 @@ spec:
               path: /healthz
               port: 9003
               scheme: HTTP
-            initialDelaySeconds: 5
+            initialDelaySeconds: 60
             timeoutSeconds: 1
             periodSeconds: 30
             successThreshold: 1
@@ -235,8 +255,12 @@ spec:
           image: "{{ .Values.imageRegistry | default "ghcr.io" }}/{{ .Values.deployment.c8rAgent.image | default "cloudchipr/c8r-agent" }}:{{ .Values.deployment.c8rAgent.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           env:
-          - name: C8R_API_KEY
-            value: {{ .Values.c8r_api_key | required "c8r_api_key is required." }}
+            - name: C8R_API_KEY
+              value: {{ .Values.c8r_api_key | required "c8r_api_key is required." }}
+          {{- range $key, $val := .Values.deployment.c8rAgent.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{ end -}}
           {{- if .Values.deployment.c8rAgent.command }}
           command: {{ .Values.deployment.c8rAgent.command | toYaml | nindent 12 }}
           {{- end }}
