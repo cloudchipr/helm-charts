@@ -1,6 +1,6 @@
 # Cloudchipr SaaS Platform C8R-Agent For Metrics
 
-## This is a Beta feature and has not been officially released yet.
+## This is a Beta feature and has not been officially released yet
 
 This chart deploys Cloudchipr Platform c8r-agent to your local cluster
 
@@ -48,30 +48,16 @@ kubectl delete namespace c8r-opencost
 
 ### General Configuration
 
-| Name                | Description                                                                   | Value                        |
-| ------------------- | ----------------------------------------------------------------------------- | ---------------------------- |
-| `namespaceOverride` | Overrides the default namespace where the chart will be installed (Optional). | `""`                         |
-| `replicaCount`      | Number of replicas for the deployment.                                        | `1`                          |
-| `imagePullPolicy`   | Image pull policy (Always, IfNotPresent, Never).                              | `Always`                     |
-| `imageRegistry`     | Default registry for all images (Optional).                                   | `""`                         |
-| `c8r_api_key`         | Api key to authenticate with C8R API. (Required).                               | ``                           |
-
-### RBAC Configuration
-
-| Name                  | Description                                                                                                                                                                  | Value  |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| `rbac.create`         | If true, create & use RBAC resources                                                                                                                                         | `true` |
-| `rbac.useClusterRole` | If set to false - Run without Cluteradmin privs needed - ONLY works if namespace is also set (if useExistingRole is set this name is used as ClusterRole or Role to bind to) | `true` |
-| `rbac.extraRules`     | Add permissions for CustomResources' apiGroups in Role/ClusterRole. Should be used in conjunction with Custom Resource State Metrics configuration                           | `[]`   |
-
-### Service Account Configuration
-
-| Name                              | Description                                                             | Value  |
-| --------------------------------- | ----------------------------------------------------------------------- | ------ |
-| `serviceAccount.create`           | Specifies whether a ServiceAccount should be created, require rbac true | `true` |
-| `serviceAccount.name`             | The name of the ServiceAccount to use.                                  | `nil`  |
-| `serviceAccount.imagePullSecrets` | Reference to one or more secrets to be used when pulling images         | `[]`   |
-| `serviceAccount.annotations`      | ServiceAccount annotations.                                             | `{}`   |
+| Name                         | Description                                                                   | Value          |
+| ---------------------------- | ----------------------------------------------------------------------------- | -------------- |
+| `namespaceOverride`          | Overrides the default namespace where the chart will be installed (Optional). | `""`           |
+| `replicaCount`               | Number of replicas for the deployment.                                        | `1`            |
+| `imagePullPolicy`            | Image pull policy (Always, IfNotPresent, Never).                              | `Always`       |
+| `imageRegistry`              | Default registry for all images (Optional).                                   | `""`           |
+| `serviceAccount.name`        | service account name to create                                                | `c8r-agent-sa` |
+| `serviceAccount.labels`      | service account labels                                                        | `{}`           |
+| `serviceAccount.annotations` | service account annotations                                                   | `{}`           |
+| `c8r_api_key`                | Token to authenticate with C8R API. (Required).                               | `""`           |
 
 ### Deployment Configuration
 
@@ -114,30 +100,31 @@ kubectl delete namespace c8r-opencost
 
 ### Open Cost Container Configuration
 
-| Name                                           | Description                                            | Value  |
-| ---------------------------------------------- | ------------------------------------------------------ | ------ |
-| `deployment.c8rOpenCost.name`                  | Deployment name for the OpenCost component (Optional). | `""`   |
-| `deployment.c8rOpenCost.image`                 | Docker image for the OpenCost.                         | `""`   |
-| `deployment.c8rOpenCost.tag`                   | Docker image tag for the OpenCost.                     | `""`   |
-| `deployment.c8rOpenCost.command`               | Command for Opencost container.                        | `[]`   |
-| `deployment.c8rOpenCost.args`                  | Args for Opencost container.                           | `[]`   |
-| `deployment.c8rOpenCost.resources`             | CPU/Memory resource requests/limits.                   | `{}`   |
-| `deployment.c8rOpenCost.probes.enabled`        | Enable/Disable Probes for pod.                         | `true` |
-| `deployment.c8rOpenCost.probes.readinessProbe` | Custom readiness probe configuration.                  | `{}`   |
-| `deployment.c8rOpenCost.probes.livenessProbe`  | Custom liveness probe configuration.                   | `{}`   |
-| `deployment.c8rOpenCost.probes.startupProbe`   | Custom startup probe configuration.                    | `{}`   |
+| Name                               | Description                                            | Value |
+| ---------------------------------- | ------------------------------------------------------ | ----- |
+| `deployment.c8rOpenCost.name`      | Deployment name for the OpenCost component (Optional). | `""`  |
+| `deployment.c8rOpenCost.image`     | Docker image for the OpenCost.                         | `""`  |
+| `deployment.c8rOpenCost.tag`       | Docker image tag for the OpenCost.                     | `""`  |
+| `deployment.c8rOpenCost.command`   | Command for Opencost container.                        | `[]`  |
+| `deployment.c8rOpenCost.args`      | Args for Opencost container.                           | `[]`  |
+| `deployment.c8rOpenCost.resources` | CPU/Memory resource requests/limits.                   | `{}`  |
+| `deployment.c8rOpenCost.env`       | Environment variables for the OpenCost container.      | `{}`  |
 
 ### C8R Agent Configuration
 
-| Name                                        | Description                                             | Value  |
-| ------------------------------------------- | ------------------------------------------------------- | ------ |
-| `deployment.c8rAgent.name`                  | Deployment name for the C8R Agent component (Optional). | `""`   |
-| `deployment.c8rAgent.image`                 | Docker image for the C8R Agent                          | `""`   |
-| `deployment.c8rAgent.tag`                   | Docker image tag for the OpenCost.                      | `""`   |
-| `deployment.c8rAgent.command`               | Command for C8R Agent container.                        | `[]`   |
-| `deployment.c8rAgent.args`                  | Args for C8R Agent container.                           | `[]`   |
-| `deployment.c8rAgent.resources`             | CPU/Memory resource requests/limits.                    | `{}`   |
-| `deployment.c8rAgent.probes.enabled`        | Enable/Disable Probes for pod.                          | `true` |
-| `deployment.c8rAgent.probes.readinessProbe` | Custom readiness probe configuration.                   | `{}`   |
-| `deployment.c8rAgent.probes.livenessProbe`  | Custom liveness probe configuration.                    | `{}`   |
-| `deployment.c8rAgent.probes.startupProbe`   | Custom startup probe configuration.                     | `{}`   |
+| Name                            | Description                                             | Value |
+| ------------------------------- | ------------------------------------------------------- | ----- |
+| `deployment.c8rAgent.name`      | Deployment name for the C8R Agent component (Optional). | `""`  |
+| `deployment.c8rAgent.image`     | Docker image for the C8R Agent                          | `""`  |
+| `deployment.c8rAgent.tag`       | Docker image tag for the OpenCost.                      | `""`  |
+| `deployment.c8rAgent.command`   | Command for C8R Agent container.                        | `[]`  |
+| `deployment.c8rAgent.args`      | Args for C8R Agent container.                           | `[]`  |
+| `deployment.c8rAgent.resources` | CPU/Memory resource requests/limits.                    | `{}`  |
+| `deployment.c8rAgent.env`       | Environment variables for the C8R Agent container.      | `{}`  |
+
+### nodeexporter Configuration
+
+| Name                       | Description                                                            | Value  |
+| -------------------------- | ---------------------------------------------------------------------- | ------ |
+| `nodeexporter.enabled`     | Enable/Disable Prometheus Node Exporter and modify its configuration.  | `true` |
+| `nodeexporter.useExisting` | Node Exporter service name and namespace to use when enabled is false. | `{}`   |
