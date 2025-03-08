@@ -180,8 +180,8 @@ spec:
           image: "{{ .Values.imageRegistry | default "ghcr.io" }}/{{ .Values.deployment.c8rOpenCost.image | default "cloudchipr/opencost" }}:{{ .Values.deployment.c8rOpenCost.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           env:
-          - name: PROMETHEUS_SERVER_ENDPOINT
-            value: "http://localhost:9090"
+            - name: PROMETHEUS_SERVER_ENDPOINT
+              value: "http://localhost:9090"
           {{- range $key, $val := .Values.deployment.c8rOpenCost.env }}
             - name: {{ $key }}
               value: {{ $val | quote }}
