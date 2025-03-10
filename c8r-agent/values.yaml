@@ -165,6 +165,9 @@ deployment:
 ## @param nodeexporter.useExisting Node Exporter service name and namespace to use when enabled is false.
 nodeexporter:
   enabled: false
+  service:
+    port: 9119
+    targetPort: 9119
   useExisting: {}
     # name: ""
     # namespace: ""
