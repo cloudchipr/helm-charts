@@ -142,6 +142,14 @@ data:
             source_labels:
               - __meta_kubernetes_endpoint_address_target_name
             target_label: node
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_service_name
+            target_label: service
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_service_port_name
+            target_label: endpoint
         tls_config:
           ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
           insecure_skip_verify: true
