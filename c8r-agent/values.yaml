@@ -161,10 +161,12 @@ deployment:
 
 ## @section nodeexporter Configuration
 
-## @param nodeexporter.enabled Enable/Disable Prometheus Node Exporter and modify its configuration.
-## @param nodeexporter.useExisting Node Exporter service name and namespace to use when enabled is false.
+## @param nodeexporter.create Deploy Node Exporter as a dependency.
+## @skip nodeexporter.service.port Deploy Node Exporter as a dependency.
+## @skip nodeexporter.service.targetPort Deploy Node Exporter as a dependency.
+## @param nodeexporter.useExisting Node Exporter service name and namespace to use when create is false.
 nodeexporter:
-  enabled: false
+  create: true
   service:
     port: 9119
     targetPort: 9119

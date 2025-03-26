@@ -15,4 +15,4 @@ dependencies:
     repository: https://prometheus-community.github.io/helm-charts
     version: 4.44.0
     alias: nodeexporter
-    condition: nodeexporter.enabled
+    condition: nodeexporter.create

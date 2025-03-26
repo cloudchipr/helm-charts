@@ -124,7 +124,7 @@ kubectl delete namespace c8r-opencost
 
 ### nodeexporter Configuration
 
-| Name                       | Description                                                            | Value  |
-| -------------------------- | ---------------------------------------------------------------------- | ------ |
-| `nodeexporter.enabled`     | Enable/Disable Prometheus Node Exporter and modify its configuration.  | `true` |
-| `nodeexporter.useExisting` | Node Exporter service name and namespace to use when enabled is false. | `{}`   |
+| Name                       | Description                                                           | Value  |
+| -------------------------- | --------------------------------------------------------------------- | ------ |
+| `nodeexporter.create`      | Deploy Node Exporter as a dependency.                                 | `true` |
+| `nodeexporter.useExisting` | Node Exporter service name and namespace to use when create is false. | `{}`   |
