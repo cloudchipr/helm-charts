@@ -3,13 +3,13 @@ appVersion: 0.1.0
 description: Cloudchipr SaaS Platform Agent For Metrics
 icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
 keywords:
-  - OpenCost
   - Cloudchipr
+  - OpenCost
   - Prometheus
 kubeVersion: ">= 1.19.0-0"
 name: c8r-agent
 type: application
-version: 0.1.1
+version: 0.1.2
 dependencies:
   - name: prometheus-node-exporter
     repository: https://prometheus-community.github.io/helm-charts
