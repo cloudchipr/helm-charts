@@ -257,6 +257,8 @@ spec:
           env:
             - name: C8R_API_KEY
               value: {{ .Values.c8r_api_key | required "c8r_api_key is required." }}
+            - name: PROMETHEUS_URL
+              value: {{ default "http://localhost:9090" .Values.deployment.prometheus_url }}
           {{- range $key, $val := .Values.deployment.c8rAgent.env }}
             - name: {{ $key }}
               value: {{ $val | quote }}
