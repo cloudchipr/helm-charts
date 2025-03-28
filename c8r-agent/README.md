@@ -133,6 +133,6 @@ kubectl delete namespace c8r-opencost
 
 | Name                             | Description                                                                 | Value         |
 | -------------------------------- | --------------------------------------------------------------------------- | ------------- |
-| `dcgmexporter.create`            | Deploy Nvidia GPU Exporter as a dependency.                                 | `true`        |
+| `dcgmexporter.create`            | Deploy Nvidia GPU Exporter as a dependency.                                 | `false`       |
 | `dcgmexporter.namespaceOverride` | install in the kube-system namespace                                        | `kube-system` |
 | `dcgmexporter.useExisting`       | Nvidia GPU Exporter service name and namespace to use when create is false. | `{}`          |

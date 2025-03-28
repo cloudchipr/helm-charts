@@ -190,7 +190,7 @@ dcgmexporter:
   useExisting: {}
     # name: ""
     # namespace: ""
-  create: true
+  create: false
   namespaceOverride: kube-system
   service:
     port: 9449
