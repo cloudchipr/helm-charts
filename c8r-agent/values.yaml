@@ -184,7 +184,7 @@ nodeexporter:
 ## @skip dcgmexporter.affinity
 ## @skip dcgmexporter.nodeSelector
 ## @skip dcgmexporter.tolerations
-## @skip dcgmexporter.namespaceOverride install in the kube-system namespace
+## @param dcgmexporter.namespaceOverride install in the kube-system namespace
 ## @param dcgmexporter.useExisting Nvidia GPU Exporter service name and namespace to use when create is false.
 dcgmexporter:
   useExisting: {}
