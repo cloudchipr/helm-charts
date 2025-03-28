@@ -3,7 +3,7 @@ entries:
   c8r-agent:
   - apiVersion: v2
     appVersion: 0.1.4
-    created: "2025-03-28T10:34:11.514497012+04:00"
+    created: "2025-03-28T10:47:14.89203706+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.create
@@ -16,7 +16,7 @@ entries:
       repository: https://nvidia.github.io/dcgm-exporter/helm-charts
       version: 4.0.4
     description: Cloudchipr SaaS Platform Agent For Metrics
-    digest: d51f269391d297d22f8f2671c4cd99297aa71de145bc76a11fc53a327db35490
+    digest: 5ef9bb1067c1f0a84f7ee5f2afd79e6b2d58656bba7714c5e680f40c1de34235
     icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
     keywords:
     - Cloudchipr
@@ -30,7 +30,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 0.1.3
-    created: "2025-03-28T10:34:11.511026495+04:00"
+    created: "2025-03-28T10:47:14.889741305+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.create
@@ -52,7 +52,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-03-28T10:34:11.508351166+04:00"
+    created: "2025-03-28T10:47:14.888327584+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.enabled
@@ -74,7 +74,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-03-28T10:34:11.505850315+04:00"
+    created: "2025-03-28T10:47:14.887055778+04:00"
     description: Cloudchipr SaaS Platform Agent For Metrics
     digest: 421ec1ed6cf478b41cca9a8f25052610cbf9cc378865e614bd5472b93bda522a
     icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
@@ -91,7 +91,7 @@ entries:
   deepgram:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-03-28T10:34:11.515701048+04:00"
+    created: "2025-03-28T10:47:14.892808449+04:00"
     description: Deepgram Self Hosted Helm Chart Managed By Cloudchipr
     digest: 73198324c13d4f7228be3cd2ba6274bfa7259b71ad2dd13062b1f55df657671c
     icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
@@ -105,4 +105,4 @@ entries:
     urls:
     - deepgram-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-28T10:34:11.505041173+04:00"
+generated: "2025-03-28T10:47:14.886543171+04:00"
