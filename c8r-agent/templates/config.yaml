@@ -77,7 +77,7 @@ data:
                 field: metadata.name={{ printf "%s-%s" .Release.Name "dcgmexporter" }}
 
       {{- else }}
-
+      {{- if .Values.dcgmexporter.useExisting }}
       - job_name: dcgm-exporter
         honor_labels: true
         relabel_configs:
@@ -89,11 +89,11 @@ data:
           - role: endpoints
             namespaces:
               names:
-                - {{ .Values.dcgmexporter.useExisting.namespace | required "dcgmexporter.useExisting.namespace is required when dcgmexporter.create is false" }}
+                - {{ default "kube-system" .Values.dcgmexporter.useExisting.namespace }}
             selectors:
               - role: endpoints
-                field: metadata.name={{ .Values.dcgmexporter.useExisting.name | required "dcgmexporter.useExisting.name is required when dcgmexporter.create is false" }}
-
+                field: metadata.name={{ .Values.dcgmexporter.useExisting.name | required "dcgmexporter.useExisting.name is required when dcgmexporter.useExisting exists" }}
+      {{- end }}
       {{- end }}
 
       - job_name: opencost
