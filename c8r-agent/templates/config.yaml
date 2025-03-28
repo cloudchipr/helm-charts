@@ -71,7 +71,8 @@ data:
         kubernetes_sd_configs:
           - role: endpoints
             namespaces:
-              own_namespace: true
+              names:
+                - {{ default "kube-system" .Values.dcgmexporter.namespaceOverride }}
             selectors:
               - role: endpoints
                 field: metadata.name={{ printf "%s-%s" .Release.Name "dcgmexporter" }}
