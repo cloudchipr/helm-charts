@@ -16,3 +16,8 @@ dependencies:
     version: 4.44.0
     alias: nodeexporter
     condition: nodeexporter.create
+  - alias: dcgmexporter
+    condition: dcgmexporter.create
+    name: dcgm-exporter
+    repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+    version: 4.0.4

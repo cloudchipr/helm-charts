@@ -159,7 +159,7 @@ deployment:
     env: {}
       ## NAME: Value
 
-## @section nodeexporter Configuration
+## @section node-exporter Configuration
 
 ## @param nodeexporter.create Deploy Node Exporter as a dependency.
 ## @skip nodeexporter.service.port Deploy Node Exporter as a dependency.
@@ -173,3 +173,34 @@ nodeexporter:
   useExisting: {}
     # name: ""
     # namespace: ""
+
+
+## @section dcgm-exporter Configuration
+
+## @param dcgmexporter.create Deploy Nvidia GPU Exporter as a dependency.
+## @skip dcgmexporter.service.port
+## @skip dcgmexporter.service.address
+## @skip dcgmexporter.serviceMonitor.enabled
+## @skip dcgmexporter.affinity
+## @skip dcgmexporter.nodeSelector
+## @skip dcgmexporter.tolerations
+## @param dcgmexporter.useExisting Nvidia GPU Exporter service name and namespace to use when create is false.
+dcgmexporter:
+  service:
+    port: 9449
+    address: ":9449"
+  useExisting: {}
+    # name: ""
+    # namespace: ""
+  create: true
+  serviceMonitor:
+    enabled: false
+  affinity: {}
+    # nodeAffinity:
+    #  requiredDuringSchedulingIgnoredDuringExecution:
+    #    nodeSelectorTerms:
+    #    - matchExpressions:
+    #      - key: nvidia-gpu
+    #        operator: Exists
+  nodeSelector: {}
+  tolerations: []

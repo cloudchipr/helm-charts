@@ -122,9 +122,16 @@ kubectl delete namespace c8r-opencost
 | `deployment.c8rAgent.resources` | CPU/Memory resource requests/limits.                    | `{}`  |
 | `deployment.c8rAgent.env`       | Environment variables for the C8R Agent container.      | `{}`  |
 
-### nodeexporter Configuration
+### node-exporter Configuration
 
 | Name                       | Description                                                           | Value  |
 | -------------------------- | --------------------------------------------------------------------- | ------ |
 | `nodeexporter.create`      | Deploy Node Exporter as a dependency.                                 | `true` |
 | `nodeexporter.useExisting` | Node Exporter service name and namespace to use when create is false. | `{}`   |
+
+### dcgm-exporter Configuration
+
+| Name                       | Description                                                                 | Value  |
+| -------------------------- | --------------------------------------------------------------------------- | ------ |
+| `dcgmexporter.create`      | Deploy Nvidia GPU Exporter as a dependency.                                 | `true` |
+| `dcgmexporter.useExisting` | Nvidia GPU Exporter service name and namespace to use when create is false. | `{}`   |

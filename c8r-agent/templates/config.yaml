@@ -58,6 +58,44 @@ data:
 
       {{- end }}
 
+
+      {{- if .Values.dcgmexporter.create }}
+
+      - job_name: dcgm-exporter
+        honor_labels: true
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_node_name
+            action: replace
+            target_label: node
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              own_namespace: true
+            selectors:
+              - role: endpoints
+                field: metadata.name={{ printf "%s-%s" .Release.Name "dcgmexporter" }}
+
+      {{- else }}
+
+      - job_name: dcgm-exporter
+        honor_labels: true
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_node_name
+            action: replace
+            target_label: node
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - {{ .Values.dcgmexporter.useExisting.namespace | required "dcgmexporter.useExisting.namespace is required when dcgmexporter.create is false" }}
+            selectors:
+              - role: endpoints
+                field: metadata.name={{ .Values.dcgmexporter.useExisting.name | required "dcgmexporter.useExisting.name is required when dcgmexporter.create is false" }}
+
+      {{- end }}
+
       - job_name: opencost
         honor_labels: true
         scrape_interval: 1m
