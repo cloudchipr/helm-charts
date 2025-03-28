@@ -200,7 +200,13 @@ dcgmexporter:
     #  requiredDuringSchedulingIgnoredDuringExecution:
     #    nodeSelectorTerms:
     #    - matchExpressions:
-    #      - key: nvidia-gpu
+    #      - key: nvidia.com/gpu.present
     #        operator: Exists
   nodeSelector: {}
+    # nvidia.com/gpu.present: 'true'
   tolerations: []
+  # tolerations:
+  #   - key: nvidia.com/gpu
+  #     operator: Equal
+  #     value: present
+  #     effect: NoSchedule
