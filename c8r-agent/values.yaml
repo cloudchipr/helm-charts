@@ -188,6 +188,8 @@ nodeexporter:
 ## @param dcgmexporter.useExisting Nvidia GPU Exporter service name and namespace to use when create is false.
 dcgmexporter:
   useExisting: {}
+    # name: ""
+    # namespace: ""
   create: true
   namespaceOverride: kube-system
   service:
@@ -195,18 +197,16 @@ dcgmexporter:
     address: ":9449"
   serviceMonitor:
     enabled: false
-  affinity: {}
-    # nodeAffinity:
-    #  requiredDuringSchedulingIgnoredDuringExecution:
-    #    nodeSelectorTerms:
-    #    - matchExpressions:
-    #      - key: nvidia.com/gpu.present
-    #        operator: Exists
+  affinity:
+    nodeAffinity:
+     requiredDuringSchedulingIgnoredDuringExecution:
+       nodeSelectorTerms:
+       - matchExpressions:
+         - key: nvidia.com/gpu.present
+           operator: Exists
+  tolerations:
+    - key: nvidia.com/gpu
+      operator: Equal
+      value: present
+      effect: NoSchedule
   nodeSelector: {}
-    # nvidia.com/gpu.present: 'true'
-  tolerations: []
-  # tolerations:
-  #   - key: nvidia.com/gpu
-  #     operator: Equal
-  #     value: present
-  #     effect: NoSchedule
