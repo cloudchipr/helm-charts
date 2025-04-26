@@ -3,7 +3,7 @@ entries:
   c8r-agent:
   - apiVersion: v2
     appVersion: 0.1.4
-    created: "2025-04-26T17:06:08.915526535+04:00"
+    created: "2025-04-26T21:33:10.335674408+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.create
@@ -30,7 +30,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 0.1.3
-    created: "2025-04-26T17:06:08.912400676+04:00"
+    created: "2025-04-26T21:33:10.332823721+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.create
@@ -52,7 +52,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 0.1.4
-    created: "2025-04-26T17:06:08.910064206+04:00"
+    created: "2025-04-26T21:33:10.330662632+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.create
@@ -65,7 +65,7 @@ entries:
       repository: https://nvidia.github.io/dcgm-exporter/helm-charts
       version: 4.0.4
     description: Cloudchipr SaaS Platform Agent For Metrics
-    digest: 7fb31781782b9106e248af2ce34f1f501c10b4885338f4838bad76d30a02230a
+    digest: 0fc22e3995b672bf3cb38738d0be2930363aa1644a986e29fdbf5308d09d4553
     icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
     keywords:
     - Cloudchipr
@@ -79,7 +79,7 @@ entries:
     version: 0.1.3-rc1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-04-26T17:06:08.907357682+04:00"
+    created: "2025-04-26T21:33:10.325940458+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.enabled
@@ -101,7 +101,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-04-26T17:06:08.906073739+04:00"
+    created: "2025-04-26T21:33:10.324655765+04:00"
     description: Cloudchipr SaaS Platform Agent For Metrics
     digest: 421ec1ed6cf478b41cca9a8f25052610cbf9cc378865e614bd5472b93bda522a
     icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
@@ -115,4 +115,4 @@ entries:
     urls:
     - c8r-agent-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-26T17:06:08.905580147+04:00"
+generated: "2025-04-26T21:33:10.324187587+04:00"
