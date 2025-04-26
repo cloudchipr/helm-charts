@@ -73,7 +73,7 @@ data:
 
         metric_relabel_configs:
           - source_labels: [__name__]
-            regex: '(kube_node_info|kube_node_status_capacity|kube_persistentvolume_capacity_bytes|kube_persistentvolumeclaim_info|kube_persistentvolumeclaim_resource_requests_storage_bytes|kube_pod_container_resource_requests|kube_pod_owner|kube_replicaset_owner|namespace_workload_pod:kube_pod_owner:relabel)'
+            regex: '(kube_job_status_failed|kube_deployment_status_replicas_available|kube_deployment_spec_replicas|kube_persistentvolume_status_phase|kube_pod_container_status_restarts_total|kube_pod_container_status_running|kube_pod_status_phase|kube_node_status_condition|kube_node_status_allocatable|kube_pod_container_resource_limits|kube_node_info|kube_node_status_capacity|kube_persistentvolume_capacity_bytes|kube_persistentvolumeclaim_info|kube_persistentvolumeclaim_resource_requests_storage_bytes|kube_pod_container_resource_requests|kube_pod_owner|kube_replicaset_owner|namespace_workload_pod:kube_pod_owner:relabel)'
             action: keep
 
 
