@@ -3,7 +3,7 @@ entries:
   c8r-agent:
   - apiVersion: v2
     appVersion: 0.1.4
-    created: "2025-04-28T13:34:36.105916921+04:00"
+    created: "2025-04-28T17:11:50.917379642+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.create
@@ -30,7 +30,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: 0.1.4
-    created: "2025-04-28T13:34:36.10290784+04:00"
+    created: "2025-04-28T17:11:50.913628502+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.create
@@ -57,7 +57,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 0.1.3
-    created: "2025-04-28T13:34:36.10000639+04:00"
+    created: "2025-04-28T17:11:50.910104537+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.create
@@ -79,7 +79,34 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 0.1.4
-    created: "2025-04-28T13:34:36.097124953+04:00"
+    created: "2025-04-28T17:11:50.908863953+04:00"
+    dependencies:
+    - alias: nodeexporter
+      condition: nodeexporter.create
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.44.0
+    - alias: dcgmexporter
+      condition: dcgmexporter.create
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 4.0.4
+    description: Cloudchipr SaaS Platform Agent For Metrics
+    digest: f473849a4ce6803e7109f695ff0bc338cff5d0c40497794aa2ad1877b8135f60
+    icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
+    keywords:
+    - Cloudchipr
+    - OpenCost
+    - Prometheus
+    kubeVersion: '>= 1.19.0-0'
+    name: c8r-agent
+    type: application
+    urls:
+    - c8r-agent-0.1.3-rc2.tgz
+    version: 0.1.3-rc2
+  - apiVersion: v2
+    appVersion: 0.1.4
+    created: "2025-04-28T17:11:50.907000036+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.create
@@ -106,7 +133,7 @@ entries:
     version: 0.1.3-rc1
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-04-28T13:34:36.092706163+04:00"
+    created: "2025-04-28T17:11:50.90520613+04:00"
     dependencies:
     - alias: nodeexporter
       condition: nodeexporter.enabled
@@ -128,7 +155,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-04-28T13:34:36.090074236+04:00"
+    created: "2025-04-28T17:11:50.903893772+04:00"
     description: Cloudchipr SaaS Platform Agent For Metrics
     digest: 421ec1ed6cf478b41cca9a8f25052610cbf9cc378865e614bd5472b93bda522a
     icon: https://static.cloudchipr.io/logos/PNG/cloudchipr%20favicon%404x.png
@@ -142,4 +169,4 @@ entries:
     urls:
     - c8r-agent-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-28T13:34:36.089022972+04:00"
+generated: "2025-04-28T17:11:50.903380111+04:00"
