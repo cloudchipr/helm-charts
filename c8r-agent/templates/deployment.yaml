@@ -269,7 +269,10 @@ spec:
           {{- if .Values.deployment.c8rAgent.args }}
           args: {{ .Values.deployment.c8rAgent.args | toYaml | nindent 12 }}
           {{- end }}
-
+          volumeMounts:
+            - name: prometheus-config
+              readOnly: true
+              mountPath: "/etc/prometheus"
           resources:
             {{- toYaml .Values.deployment.c8rAgent.resources | nindent 12 }}
 
