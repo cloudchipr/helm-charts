@@ -6,20 +6,76 @@ metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
 data:
+  recording_rules.yaml: |
+    groups:
+      - name: k8s.rules.pod_owner
+        rules:
+          - expr: |-
+              max by (cluster, namespace, workload, pod) (
+                label_replace(
+                  label_replace(
+                    kube_pod_owner{job="kube-state-metrics", owner_kind="ReplicaSet"},
+                    "replicaset", "$1", "owner_name", "(.*)"
+                  ) * on (replicaset, namespace) group_left(owner_name) topk by (replicaset, namespace) (
+                    1, max by (replicaset, namespace, owner_name) (
+                      kube_replicaset_owner{job="kube-state-metrics"}
+                    )
+                  ),
+                  "workload", "$1", "owner_name", "(.*)"
+                )
+              )
+            labels:
+              workload_type: deployment
+            record: namespace_workload_pod:kube_pod_owner:relabel
+          - expr: |-
+              max by (cluster, namespace, workload, pod) (
+                label_replace(
+                  kube_pod_owner{job="kube-state-metrics", owner_kind="DaemonSet"},
+                  "workload", "$1", "owner_name", "(.*)"
+                )
+              )
+            labels:
+              workload_type: daemonset
+            record: namespace_workload_pod:kube_pod_owner:relabel
+          - expr: |-
+              max by (cluster, namespace, workload, pod) (
+                label_replace(
+                  kube_pod_owner{job="kube-state-metrics", owner_kind="StatefulSet"},
+                  "workload", "$1", "owner_name", "(.*)"
+                )
+              )
+            labels:
+              workload_type: statefulset
+            record: namespace_workload_pod:kube_pod_owner:relabel
+          - expr: |-
+              max by (cluster, namespace, workload, pod) (
+                label_replace(
+                  kube_pod_owner{job="kube-state-metrics", owner_kind="Job"},
+                  "workload", "$1", "owner_name", "(.*)"
+                )
+              )
+            labels:
+              workload_type: job
+            record: namespace_workload_pod:kube_pod_owner:relabel
+
+
   prometheus.yaml: |
     global:
       evaluation_interval: 1m
       scrape_interval: 1m
       scrape_timeout: 30s
     rule_files:
-      - /etc/config/recording_rules.yml
-      - /etc/config/alerting_rules.yml
-      - /etc/config/rules
-      - /etc/config/alerts
+      - /etc/prometheus/recording_rules.yaml
     scrape_configs:
       - job_name: kube-state-metrics
         static_configs:
           - targets: ["localhost:8080"]
+
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: '(kube_job_status_failed|kube_deployment_status_replicas_available|kube_deployment_spec_replicas|kube_persistentvolume_status_phase|kube_pod_container_status_restarts_total|kube_pod_container_status_running|kube_pod_status_phase|kube_node_status_condition|kube_node_status_allocatable|kube_pod_container_resource_limits|kube_node_info|kube_node_status_capacity|kube_persistentvolume_capacity_bytes|kube_persistentvolumeclaim_info|kube_persistentvolumeclaim_resource_requests_storage_bytes|kube_pod_container_resource_requests|kube_pod_owner|kube_replicaset_owner|namespace_workload_pod:kube_pod_owner:relabel)'
+            action: keep
+
 
       {{- if .Values.nodeexporter.create }}
 
@@ -76,6 +132,10 @@ data:
             selectors:
               - role: endpoints
                 field: metadata.name={{ printf "%s-%s" .Release.Name "dcgmexporter" }}
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: '(DCGM_FI_DEV_DEC_UTIL|DCGM_FI_PROF_GR_ENGINE_ACTIVE)'
+            action: keep
 
       {{- else }}
       {{- if .Values.dcgmexporter.useExisting }}
@@ -94,6 +154,10 @@ data:
             selectors:
               - role: endpoints
                 field: metadata.name={{ .Values.dcgmexporter.useExisting.name | required "dcgmexporter.useExisting.name is required when dcgmexporter.useExisting exists" }}
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: '(DCGM_FI_DEV_DEC_UTIL|DCGM_FI_PROF_GR_ENGINE_ACTIVE)'
+            action: keep
       {{- end }}
       {{- end }}
 
@@ -104,80 +168,15 @@ data:
         static_configs:
         - targets:
           - localhost:9003
-
-      - job_name: kubelet-probes
-        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-        metrics_path: /metrics/probes
-        scheme: https
-        honor_labels: true
-        honor_timestamps: true
-        relabel_configs:
-          - source_labels:
-              - __metrics_path__
-            action: replace
-            target_label: metrics_path
-        tls_config:
-          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          insecure_skip_verify: true
-        kubernetes_sd_configs:
-          - follow_redirects: true
-            role: endpoints
-            selectors:
-              - role: endpoints
-                label: app.kubernetes.io/managed-by=c8r-agent
-                field: metadata.name=c8r-agent-kubelet
-
-      - job_name: kubelet
-        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-        honor_labels: true
-        honor_timestamps: true
-        scheme: https
-        relabel_configs:
-          - source_labels:
-              - __metrics_path__
-            action: replace
-            target_label: metrics_path
-        tls_config:
-          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          insecure_skip_verify: true
-        kubernetes_sd_configs:
-          - follow_redirects: true
-            role: endpoints
-            selectors:
-              - role: endpoints
-                label: app.kubernetes.io/managed-by=c8r-agent
-                field: metadata.name=c8r-agent-kubelet
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: '(container_cpu_allocation|container_gpu_allocation|container_memory_allocation_bytes|deployment_match_labels|kubecost_load_balancer_cost|kubecost_network_internet_egress_cost|kubecost_network_region_egress_cost|kubecost_network_zone_egress_cost|kubecost_node_is_spot|kubecost_pv_info|kube_node_labels|kube_node_status_capacity|kube_persistentvolume_capacity_bytes|kube_persistentvolumeclaim_info|kube_persistentvolumeclaim_resource_requests_storage_bytes|kube_pod_container_resource_requests|kube_pod_labels|kube_pod_owner|node_cpu_hourly_cost|node_gpu_hourly_cost|node_ram_hourly_cost|pod_pvc_allocation|pv_hourly_cost|service_selector_labels|statefulSet_match_labels)'
+            action: keep
 
       - job_name: kubelet-cadvisor
         bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
         honor_labels: true
         honor_timestamps: true
-        metric_relabel_configs:
-          - action: drop
-            regex: container_cpu_(cfs_throttled_seconds_total|load_average_10s|system_seconds_total|user_seconds_total)
-            source_labels:
-              - __name__
-          - action: drop
-            regex: container_fs_(io_current|io_time_seconds_total|io_time_weighted_seconds_total|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)
-            source_labels:
-              - __name__
-          - action: drop
-            regex: container_memory_(mapped_file|swap)
-            source_labels:
-              - __name__
-          - action: drop
-            regex: container_(file_descriptors|tasks_state|threads_max)
-            source_labels:
-              - __name__
-          - action: drop
-            regex: container_spec.*
-            source_labels:
-              - __name__
-          - action: drop
-            regex: .+;
-            source_labels:
-              - id
-              - pod
         metrics_path: /metrics/cadvisor
         scheme: https
         relabel_configs:
@@ -207,4 +206,7 @@ data:
               - role: endpoints
                 label: app.kubernetes.io/managed-by=c8r-agent
                 field: metadata.name=c8r-agent-kubelet
-
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: '(container_cpu_usage_seconds_total|container_memory_working_set_bytes|container_network_receive_bytes_total|container_network_transmit_bytes_total)'
+            action: keep
