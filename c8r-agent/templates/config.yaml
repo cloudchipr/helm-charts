@@ -1,3 +1,18 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.name" . }}-agent-config
+  namespace: {{ include "c8rAgent.namespace" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+data:
+  config.json: |
+    {
+        "chart_version": {{ .Chart.Version | quote }}
+    }
+
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
