@@ -186,11 +186,8 @@ data:
           insecure_skip_verify: true
         kubernetes_sd_configs:
           - follow_redirects: true
-            role: endpoints
-            selectors:
-              - role: endpoints
-                label: app.kubernetes.io/managed-by=c8r-agent
-                field: metadata.name=c8r-agent-kubelet
+            role: node
+
 
       - job_name: kubelet
         bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
@@ -207,11 +204,8 @@ data:
           insecure_skip_verify: true
         kubernetes_sd_configs:
           - follow_redirects: true
-            role: endpoints
-            selectors:
-              - role: endpoints
-                label: app.kubernetes.io/managed-by=c8r-agent
-                field: metadata.name=c8r-agent-kubelet
+            role: node
+
 
       - job_name: kubelet-cadvisor
         bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
@@ -267,9 +261,4 @@ data:
           insecure_skip_verify: true
         kubernetes_sd_configs:
           - follow_redirects: true
-            role: endpoints
-            selectors:
-              - role: endpoints
-                label: app.kubernetes.io/managed-by=c8r-agent
-                field: metadata.name=c8r-agent-kubelet
-
+            role: node
