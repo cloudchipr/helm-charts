@@ -42,6 +42,9 @@ deployment:
   ## @param deployment.tolerations Tolerations for pod assignment (Optional).
   tolerations: []
 
+  ## @param deployment.prometheus_url Prometheus URL for the C8R Agent. Default is http://localhost:9090
+  prometheus_url: ""
+
   ## @section Prometheus Container Configuration
 
   c8rPrometheuServer:
