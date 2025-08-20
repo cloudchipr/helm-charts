@@ -24,7 +24,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "chart.labels" . | nindent 4 }}
+        {{- include "chart.labels" . | nindent 8 }}
         app: {{ include "chart.name" . }}
         {{- with .Values.deployment.labels }}
         {{- toYaml . | nindent 8 }}
@@ -263,7 +263,7 @@ spec:
             - name: C8R_API_KEY
               value: {{ .Values.c8r_api_key | required "c8r_api_key is required." }}
             - name: PROMETHEUS_URL
-              value: {{ default "http://localhost:9090" .Values.deployment.prometheus_url }}
+              value: {{ .Values.deployment.prometheus_url | default "http://localhost:9090" }}
             # - name: C8R_CHART_VERSION
             #   value: {{ .Chart.Version | quote }}
           {{- range $key, $val := .Values.deployment.c8rAgent.env }}
