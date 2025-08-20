@@ -61,14 +61,14 @@ kubectl delete namespace c8r-opencost
 
 ### Deployment Configuration
 
-| Name                        | Description                                                        | Value |
-| --------------------------- | ------------------------------------------------------------------ | ----- |
-| `deployment.labels`         | Extra labels for the service.                                      | `{}`  |
-| `deployment.annotations`    | Annotations for the service.                                       | `{}`  |
-| `deployment.nodeSelector`   | Node Selector labels for pod assignment (Optional).                | `{}`  |
-| `deployment.affinity`       | Affinity settings for pod assignment (Optional).                   | `{}`  |
-| `deployment.tolerations`    | Tolerations for pod assignment (Optional).                         | `[]`  |
-| `deployment.prometheus_url` | Prometheus URL for the C8R Agent. Default is http://localhost:9090 | `""`  |
+| Name                        | Description                                                          | Value |
+| --------------------------- | -------------------------------------------------------------------- | ----- |
+| `deployment.labels`         | Extra labels for the service.                                        | `{}`  |
+| `deployment.annotations`    | Annotations for the service.                                         | `{}`  |
+| `deployment.nodeSelector`   | Node Selector labels for pod assignment (Optional).                  | `{}`  |
+| `deployment.affinity`       | Affinity settings for pod assignment (Optional).                     | `{}`  |
+| `deployment.tolerations`    | Tolerations for pod assignment (Optional).                           | `[]`  |
+| `deployment.prometheus_url` | Prometheus URL for the C8R Agent. Default is `http://localhost:9090` | `""`  |
 
 ### Prometheus Container Configuration
 
