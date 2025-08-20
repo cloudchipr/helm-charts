@@ -24,6 +24,7 @@ spec:
   template:
     metadata:
       labels:
+        {{- include "chart.labels" . | nindent 4 }}
         app: {{ include "chart.name" . }}
         {{- with .Values.deployment.labels }}
         {{- toYaml . | nindent 8 }}
