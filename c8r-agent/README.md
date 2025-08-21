@@ -74,16 +74,16 @@ kubectl delete namespace c8r-opencost
 
 | Name                                                  | Description                                           | Value  |
 | ----------------------------------------------------- | ----------------------------------------------------- | ------ |
-| `deployment.c8rPrometheuServer.name`                  | Container name for the Opencost component (Optional). | `""`   |
-| `deployment.c8rPrometheuServer.image`                 | Docker image for the Opencost.                        | `""`   |
-| `deployment.c8rPrometheuServer.tag`                   | Docker image tag for the Opencost.                    | `""`   |
-| `deployment.c8rPrometheuServer.command`               | Command for Opencost container.                       | `[]`   |
-| `deployment.c8rPrometheuServer.args`                  | Args for Opencost container.                          | `[]`   |
-| `deployment.c8rPrometheuServer.resources`             | CPU/Memory resource requests/limits.                  | `{}`   |
-| `deployment.c8rPrometheuServer.probes.enabled`        | Enable/Disable Probes for pod.                        | `true` |
-| `deployment.c8rPrometheuServer.probes.readinessProbe` | Custom readiness probe configuration.                 | `{}`   |
-| `deployment.c8rPrometheuServer.probes.livenessProbe`  | Custom liveness probe configuration.                  | `{}`   |
-| `deployment.c8rPrometheuServer.probes.startupProbe`   | Custom startup probe configuration.                   | `{}`   |
+| `deployment.c8rPrometheusServer.name`                  | Container name for the Opencost component (Optional). | `""`   |
+| `deployment.c8rPrometheusServer.image`                 | Docker image for the Opencost.                        | `""`   |
+| `deployment.c8rPrometheusServer.tag`                   | Docker image tag for the Opencost.                    | `""`   |
+| `deployment.c8rPrometheusServer.command`               | Command for Opencost container.                       | `[]`   |
+| `deployment.c8rPrometheusServer.args`                  | Args for Opencost container.                          | `[]`   |
+| `deployment.c8rPrometheusServer.resources`             | CPU/Memory resource requests/limits.                  | `{}`   |
+| `deployment.c8rPrometheusServer.probes.enabled`        | Enable/Disable Probes for pod.                        | `true` |
+| `deployment.c8rPrometheusServer.probes.readinessProbe` | Custom readiness probe configuration.                 | `{}`   |
+| `deployment.c8rPrometheusServer.probes.livenessProbe`  | Custom liveness probe configuration.                  | `{}`   |
+| `deployment.c8rPrometheusServer.probes.startupProbe`   | Custom startup probe configuration.                   | `{}`   |
 
 ### Kube-State-Metrics Container Configuration
 
