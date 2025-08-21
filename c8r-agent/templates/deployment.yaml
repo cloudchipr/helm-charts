@@ -120,7 +120,7 @@ spec:
           resources:
             {{- toYaml .Values.deployment.c8rPrometheusServer.resources | nindent 12 }}
 
-        - name: c8r-kube-sate-metrics
+        - name: c8r-kube-state-metrics
           image: "{{ .Values.imageRegistry | default "registry.k8s.io" }}/{{ .Values.deployment.c8rKubeStateMetrics.image | default "kube-state-metrics/kube-state-metrics" }}:{{ .Values.deployment.c8rKubeStateMetrics.tag | default "v2.10.0" }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           {{- if .Values.deployment.c8rKubeStateMetrics.command }}
