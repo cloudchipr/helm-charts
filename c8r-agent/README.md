@@ -72,8 +72,8 @@ kubectl delete namespace c8r-opencost
 
 ### Prometheus Container Configuration
 
-| Name                                                  | Description                                           | Value  |
-| ----------------------------------------------------- | ----------------------------------------------------- | ------ |
+| Name                                                   | Description                                           | Value  |
+| ------------------------------------------------------ | ----------------------------------------------------- | ------ |
 | `deployment.c8rPrometheusServer.name`                  | Container name for the Opencost component (Optional). | `""`   |
 | `deployment.c8rPrometheusServer.image`                 | Docker image for the Opencost.                        | `""`   |
 | `deployment.c8rPrometheusServer.tag`                   | Docker image tag for the Opencost.                    | `""`   |
