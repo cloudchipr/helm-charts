@@ -1,14 +1,39 @@
-{{- if and ( .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" ) .Values.metrics.enabled }}
+{{- /*
+PodMonitor resources for Prometheus Operator
+Creates monitors for both agent and server components
+*/ -}}
+{{- if and .Values.metrics.enabled .Values.serviceMonitors.enabled -}}
+{{- if .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" -}}
+---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: {{ include "c8r.fullname" . }}-agent
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "c8r.labels" . | nindent 4 }}
     {{- include "c8r.agentSelectorLabels" . | nindent 4 }}
+    {{- with .Values.serviceMonitors.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
+  jobLabel: app.kubernetes.io/name
   podMetricsEndpoints:
     - port: metrics
+      path: /metrics
+      interval: {{ .Values.serviceMonitors.interval }}
+      scrapeTimeout: {{ .Values.serviceMonitors.scrapeTimeout }}
+      {{- with .Values.serviceMonitors.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.serviceMonitors.relabelings }}
+      relabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
       {{- include "c8r.agentSelectorLabels" . | nindent 6 }}
@@ -17,13 +42,33 @@ apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: {{ include "c8r.fullname" . }}-server
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "c8r.labels" . | nindent 4 }}
     {{- include "c8r.serverSelectorLabels" . | nindent 4 }}
+    {{- with .Values.serviceMonitors.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
+  jobLabel: app.kubernetes.io/name
   podMetricsEndpoints:
     - port: metrics
+      path: /metrics
+      interval: {{ .Values.serviceMonitors.interval }}
+      scrapeTimeout: {{ .Values.serviceMonitors.scrapeTimeout }}
+      {{- with .Values.serviceMonitors.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.serviceMonitors.relabelings }}
+      relabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
       {{- include "c8r.serverSelectorLabels" . | nindent 6 }}
+{{- end }}
 {{- end }}

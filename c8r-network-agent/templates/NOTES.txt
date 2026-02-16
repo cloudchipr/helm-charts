@@ -1,0 +1,110 @@
+{{- /*
+Post-installation notes for c8r-network-agent
+*/ -}}
+================================================================================
+ c8r-network-agent has been deployed!
+================================================================================
+
+CHART: {{ .Chart.Name }}-{{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+RELEASE: {{ .Release.Name }}
+NAMESPACE: {{ .Release.Namespace }}
+STATUS: Alpha
+
+--------------------------------------------------------------------------------
+COMPONENTS
+--------------------------------------------------------------------------------
+
+AGENT (DaemonSet):
+  - Collects network traffic data from each node via conntrack
+  - Runs with hostNetwork and hostPID for system access
+
+SERVER (Deployment):
+  - Replicas: {{ .Values.deployment.replicaCount }}
+  - Aggregates data from agents
+
+--------------------------------------------------------------------------------
+ENDPOINTS
+--------------------------------------------------------------------------------
+
+Server gRPC:
+  {{ include "c8r.fullname" . }}-server.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+
+{{- if .Values.metrics.enabled }}
+Metrics:
+  Agent:  http://<node-ip>:{{ .Values.metrics.port }}/metrics
+  Server: http://{{ include "c8r.fullname" . }}-server.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.metrics.port }}/metrics
+{{- end }}
+
+--------------------------------------------------------------------------------
+CONFIGURATION
+--------------------------------------------------------------------------------
+
+Environment: {{ .Values.environment }}
+{{- if .Values.cloud }}
+Cloud:       {{ .Values.cloud }}
+{{- end }}
+{{- if .Values.region }}
+Region:      {{ .Values.region }}
+{{- end }}
+{{- if .Values.cluster }}
+Cluster:     {{ .Values.cluster }}
+{{- end }}
+
+Collection Interval: {{ .Values.configuration.agent.collectionInterval }}
+Exporter Workers:    {{ .Values.exporter.numWorkers }}
+Ignore UDP:          {{ .Values.exporter.ignoreUDP }}
+
+--------------------------------------------------------------------------------
+VERIFY INSTALLATION
+--------------------------------------------------------------------------------
+
+# Check agent pods:
+kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/component=agent
+
+# Check server pods:
+kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/component=server
+
+# View agent logs:
+kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/component=agent -f
+
+# View server logs:
+kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/component=server -f
+
+# Verify conntrack is enabled:
+kubectl exec -n {{ .Release.Namespace }} \
+  $(kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/component=agent -o jsonpath='{.items[0].metadata.name}') \
+  -- cat /proc/sys/net/netfilter/nf_conntrack_acct
+
+# View config:
+kubectl get configmap -n {{ .Release.Namespace }} {{ include "c8r.fullname" . }}-config -o yaml
+
+{{- if .Values.serviceMonitors.enabled }}
+
+--------------------------------------------------------------------------------
+PROMETHEUS MONITORING
+--------------------------------------------------------------------------------
+
+PodMonitors created for agent and server components.
+Ensure Prometheus Operator discovers monitors in '{{ .Release.Namespace }}' namespace.
+{{- end }}
+
+--------------------------------------------------------------------------------
+TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+If agents aren't collecting data:
+  1. Verify conntrack accounting: cat /proc/sys/net/netfilter/nf_conntrack_acct
+  2. Check init container logs for errors
+  3. Ensure NET_ADMIN capability is allowed
+
+If server isn't receiving data:
+  1. Check gRPC connectivity between agent and server
+  2. Verify service DNS resolution
+  3. Check firewall rules for port {{ .Values.service.port }}
+
+--------------------------------------------------------------------------------
+DOCUMENTATION
+--------------------------------------------------------------------------------
+
+For more information, see the chart README.

@@ -1,0 +1,13 @@
+{{- /*
+Extra Objects - Dynamically create any Kubernetes resources from values
+*/ -}}
+{{- range .Values.extraObjects }}
+---
+{{- if .metadata }}
+{{- $_ := set .metadata "labels" (merge (.metadata.labels | default dict) (include "c8r.labels" $ | fromYaml)) }}
+{{- if not .metadata.namespace }}
+{{- $_ := set .metadata "namespace" $.Release.Namespace }}
+{{- end }}
+{{- end }}
+{{ toYaml . }}
+{{- end }}
