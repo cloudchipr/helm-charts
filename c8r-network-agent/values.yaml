@@ -19,7 +19,7 @@ cluster: ""
 image:
   repository: quay.io/cloudchipr/c8r-network-agent
   pullPolicy: IfNotPresent
-  tag: "test_2"
+  tag: "test_3"
 
 imagePullSecrets: []
 
