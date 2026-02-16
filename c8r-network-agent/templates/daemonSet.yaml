@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "c8r.fullname" . }}-agent
+  labels:
+    {{- include "c8r.labels" . | nindent 4 }}
+    {{- include "c8r.agentSelectorLabels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "c8r.agentSelectorLabels" . | nindent 6 }}
+  {{- with .Values.updateStrategy }}
+  updateStrategy:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- include "c8r.agentSelectorLabels" . | nindent 8 }}
+    spec:
+      hostNetwork: true
+      hostPID: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClass.enabled }}
+      priorityClassName: {{ .Values.priorityClass.name }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: enable-conntrack
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Enabling conntrack accounting..."
+              echo 1 > /proc/sys/net/netfilter/nf_conntrack_acct
+              echo "Done. Current value: $(cat /proc/sys/net/netfilter/nf_conntrack_acct)"
+          securityContext:
+            privileged: true
+      containers:
+        - name: {{ .Chart.Name }}-agent
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - ./agent
+          env:
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+                  divisor: 1
+            - name: GOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+                  divisor: 1
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: COLLECTION_INTERVAL
+              value: "{{ .Values.configuration.agent.collectionInterval }}"
+            - name: SKIP_CONNTRACK_SANITY_CHECK
+              value: "{{ .Values.configuration.agent.skipConntrackSanityCheck }}"
+            - name: KUBENETMON_SERVER_SERVICE_HOST
+              value: "{{ .Values.configuration.agent.serverServiceHost | default (include "c8r.serverServiceHost" .) }}"
+            - name: KUBENETMON_SERVER_SERVICE_PORT
+              value: "{{ .Values.configuration.agent.serverServicePort }}"
+            - name: METRICS_PORT
+              value: "{{ .Values.metrics.port }}"
+            - name: UPTIME_WAIT_DURATION
+              value: "{{ .Values.configuration.agent.uptimeWaitDuration }}"
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.metrics.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: metrics
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: metrics
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources.agent | nindent 12 }}
+      terminationGracePeriodSeconds: 30

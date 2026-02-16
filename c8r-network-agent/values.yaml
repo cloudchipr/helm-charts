@@ -1,0 +1,133 @@
+image:
+  repository: ghcr.io/clickhouse/kubenetmon
+  pullPolicy: IfNotPresent
+  tag: ""
+
+automountServiceAccountToken: true
+
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 50%
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+environment: development
+
+service:
+  type: ClusterIP
+  port: 8884
+
+serviceMonitors:
+  enabled: false
+  interval: 30s
+
+serviceAccount:
+  create: true
+  annotations: {}
+  # The name of the service account to use. If not set and create is true, a
+  # name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+priorityClass:
+  name: c8r-network-agent
+  enabled: true
+  preemptionPolicy: PreemptLowerPriority
+  value: 10001000
+
+metrics:
+  enabled: true
+  port: 8883
+  primaryAlerter: false
+
+securityContext:
+  capabilities:
+    add: ["NET_ADMIN"]
+    drop: ["ALL"]
+  # This is needed to connect to conntrack. Not uncommon among monitoring
+  # DaemonSets. datadog runs like this.
+  runAsUser: 0
+  readOnlyRootFilesystem: true
+
+resources:
+  agent:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 0m
+      memory: 0Mi
+  server:
+    limits:
+      cpu: 2000m
+      memory: 2512Mi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+nodeSelector: {}
+
+tolerations: []
+
+configuration:
+  agent:
+    collectionInterval: 5s
+    # Skip checking for non-zero conntrack counters on startup. This useful to
+    # skip in test environments where conntrack accounting isn't enabled.
+    skipConntrackSanityCheck: false
+    # Leave empty to auto-generate from release name and namespace.
+    # Override only if server is in a different namespace.
+    serverServiceHost: ""
+    serverServicePort: 8884
+    uptimeWaitDuration: 300s
+  server: {}
+
+secrets: {}
+
+cloud: ""
+region: ""
+cluster: ""
+maxGRPCConnectionAge: 300s
+
+inserter:
+  enabled: true
+  database: "default"
+  endpoint: "clickhouse.default.svc.cluster.local:9000"
+  username: "default"
+  password: ""
+  dialTimeout: 30s
+  maxIdleConnections: 50
+  batchSize: 15000
+  batchSendTimeout: 30s
+  waitForAsyncInsert: false
+
+  numInserterWorkers: 20
+  ignoreUDP: true
+  # Skip pinging ClickHouse on startup. This is useful to skip in test
+  # environments where ClickHouse isn't spun up.
+  skipPing: false
+  # Disable TLS to ClickHouse. This is useful for testing.
+  disableTLS: false
+
+deployment:
+  replicaCount: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - c8r-network-agent-server
+          topologyKey: kubernetes.io/hostname
