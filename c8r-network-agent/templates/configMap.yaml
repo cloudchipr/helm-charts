@@ -11,17 +11,17 @@ metadata:
     {{- include "c8r.labels" . | nindent 4 }}
 data:
   config.yaml: |
-    metrics_port: {{ .Values.metrics.port }}
-    grpc_port: {{ .Values.service.port }}
-    environment: {{ .Values.environment | quote }}
-    cloud: {{ .Values.cloud | quote }}
-    region: {{ .Values.region | quote }}
-    cluster: {{ .Values.cluster | quote }}
-    max_grpc_connection_age: {{ .Values.maxGRPCConnectionAge | quote }}
-    num_exporter_workers: {{ .Values.exporter.numWorkers }}
-    {{- if .Values.exporter.ignoreUDP }}
-    ignore_udp: {{ .Values.exporter.ignoreUDP }}
+    metrics_port: {{ .Values.metrics.port | default (printf "${%s}" .Values.metrics.portFromEnv) }}
+    grpc_port: {{ .Values.service.port | default (printf "${%s}" .Values.service.portFromEnv) }}
+    environment: {{ .Values.environment | default (printf "${%s}" .Values.environmentFromEnv) | quote }}
+    cloud: {{ .Values.cloud | default (printf "${%s}" .Values.cloudFromEnv) | quote }}
+    region: {{ .Values.region | default (printf "${%s}" .Values.regionFromEnv) | quote }}
+    cluster: {{ .Values.cluster | default (printf "${%s}" .Values.clusterFromEnv) | quote }}
+    max_grpc_connection_age: {{ .Values.maxGRPCConnectionAge | default (printf "${%s}" .Values.maxGRPCConnectionAgeFromEnv) | quote }}
+    num_exporter_workers: {{ .Values.exporter.numWorkers | default (printf "${%s}" .Values.exporter.numWorkersFromEnv) }}
+    {{- if or .Values.exporter.ignoreUDP .Values.exporter.ignoreUDPFromEnv }}
+    ignore_udp: {{ .Values.exporter.ignoreUDP | default (printf "${%s}" .Values.exporter.ignoreUDPFromEnv) }}
     {{- end }}
-    {{- if and .Values.exporter.azureContainerURL (not .Values.exporter.azureContainerURLFromEnv) }}
-    azure_container_url: {{ .Values.exporter.azureContainerURL | quote }}
+    {{- if or .Values.exporter.azureContainerURL .Values.exporter.azureContainerURLFromEnv }}
+    azure_container_url: {{ .Values.exporter.azureContainerURL | default (printf "${%s}" .Values.exporter.azureContainerURLFromEnv) | quote }}
     {{- end }}

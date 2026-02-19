@@ -1,8 +1,13 @@
-# development azure environment values
-environment: development
+# develproductionopment azure environment values
+environment: production
 cloud: azure
 region: westus2
-cluster: c8r-dev
+cluster: c8r-prod
+
+image:
+  repository: quay.io/cloudchipr/c8r-network-agent
+  pullPolicy: IfNotPresent
+  tag: "v0.1.0-alpha"
 
 deployment:
   replicaCount: 2
@@ -51,7 +56,7 @@ extraObjects:
         - extract:
             conversionStrategy: Default
             decodingStrategy: None
-            key: kv-staging/saas/microservices/c8r-network-agent-environment
+            key: kv-production/saas/microservices/c8r-network-agent-environment
             metadataPolicy: None
       refreshInterval: 15s
       secretStoreRef:
