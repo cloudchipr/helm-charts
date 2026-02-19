@@ -64,6 +64,23 @@ helm install c8r-network-agent ./c8r-network-agent \
 
 ## Configuration
 
+### Environment Variable Fallback
+
+Every configuration parameter that maps to an app config field supports a companion `FromEnv` boolean flag. When set to `true`, the ConfigMap will render the corresponding environment variable reference (e.g. `${ENVIRONMENT}`) instead of a hardcoded value. This is useful when values are injected at runtime via Kubernetes Secrets or external secret managers.
+
+```yaml
+# Use a hardcoded value
+environment: production
+environmentFromEnv: false
+
+# OR let the app read it from the ENVIRONMENT env var at runtime
+environmentFromEnv: true
+```
+
+The env var names match the `env` struct tags in the application exactly (e.g. `ENVIRONMENT`, `CLOUD`, `REGION`, etc.).
+
+---
+
 ### Global Parameters
 
 | Parameter | Description | Default |
@@ -71,17 +88,25 @@ helm install c8r-network-agent ./c8r-network-agent \
 | `nameOverride` | Override chart name | `""` |
 | `fullnameOverride` | Override full chart name | `""` |
 | `environment` | Environment name | `"development"` |
+| `environmentFromEnv` | Read environment from `ENVIRONMENT` env var | `false` |
 | `cloud` | Cloud provider (aws, azure, gcp) | `""` |
+| `cloudFromEnv` | Read cloud from `CLOUD` env var | `false` |
 | `region` | Cloud region | `""` |
+| `regionFromEnv` | Read region from `REGION` env var | `false` |
 | `cluster` | Cluster name | `""` |
+| `clusterFromEnv` | Read cluster from `CLUSTER` env var | `false` |
+| `organisationID` | Organisation ID | `""` |
+| `organisationIDFromEnv` | Read organisation ID from `ORGANISATION_ID` env var | `false` |
+| `clusterID` | Cluster ID | `""` |
+| `clusterIDFromEnv` | Read cluster ID from `CLUSTER_ID` env var | `false` |
 
 ### Image Parameters
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `image.repository` | Image repository | `ghcr.io/c8r/network-agent` |
+| `image.repository` | Image repository | `quay.io/cloudchipr/c8r-network-agent` |
 | `image.pullPolicy` | Pull policy | `IfNotPresent` |
-| `image.tag` | Image tag | `""` (uses appVersion) |
+| `image.tag` | Image tag | `"v0.1.1-alpha"` |
 | `imagePullSecrets` | Image pull secrets | `[]` |
 
 ### Service Account Parameters
@@ -99,7 +124,7 @@ helm install c8r-network-agent ./c8r-network-agent \
 | `configuration.agent.collectionInterval` | Collection interval | `5s` |
 | `configuration.agent.skipConntrackSanityCheck` | Skip conntrack check | `false` |
 | `configuration.agent.serverServiceHost` | Server host (auto-generated) | `""` |
-| `configuration.agent.serverServicePort` | Server port | `8884` |
+| `configuration.agent.serverServicePort` | Server port | `8874` |
 | `configuration.agent.uptimeWaitDuration` | Uptime wait duration | `300s` |
 | `updateStrategy.type` | Update strategy | `RollingUpdate` |
 | `updateStrategy.rollingUpdate.maxUnavailable` | Max unavailable | `50%` |
@@ -113,31 +138,38 @@ helm install c8r-network-agent ./c8r-network-agent \
 | `deployment.affinity` | Pod affinity rules | See values.yaml |
 | `deployment.topologySpreadConstraints` | Topology constraints | `[]` |
 | `maxGRPCConnectionAge` | Max gRPC connection age | `300s` |
+| `maxGRPCConnectionAgeFromEnv` | Read from `MAX_GRPC_CONNECTION_AGE` env var | `false` |
 
 ### Service Parameters
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `service.type` | Service type | `ClusterIP` |
-| `service.port` | gRPC port | `8884` |
+| `service.port` | gRPC port | `8874` |
 | `service.annotations` | Service annotations | `{}` |
+| `grpcPortFromEnv` | Read gRPC port from `GRPC_PORT` env var | `false` |
 
 ### Metrics Parameters
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `metrics.enabled` | Enable metrics | `true` |
-| `metrics.port` | Metrics port | `8883` |
+| `metrics.port` | Metrics port | `8873` |
+| `metricsPortFromEnv` | Read metrics port from `METRICS_PORT` env var | `false` |
 | `serviceMonitors.enabled` | Enable PodMonitor | `false` |
 | `serviceMonitors.interval` | Scrape interval | `30s` |
+| `serviceMonitors.scrapeTimeout` | Scrape timeout | `10s` |
 
 ### Exporter Parameters
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `exporter.numWorkers` | Number of workers | `20` |
+| `exporter.numWorkers` | Number of export workers | `40` |
+| `exporter.numWorkersFromEnv` | Read from `NUM_EXPORTER_WORKERS` env var | `false` |
 | `exporter.ignoreUDP` | Ignore UDP traffic | `true` |
+| `exporter.ignoreUDPFromEnv` | Read from `IGNORE_UDP` env var | `false` |
 | `exporter.azureContainerURL` | Azure container URL | `""` |
+| `exporter.azureContainerURLFromEnv` | Read from `AZURE_CONTAINER_URL` env var | `false` |
 
 ### Resource Parameters
 
@@ -177,9 +209,22 @@ helm install c8r-network-agent ./c8r-network-agent \
 | `probes.liveness.enabled` | Enable liveness probe | `true` |
 | `probes.liveness.initialDelaySeconds` | Initial delay | `60` |
 | `probes.liveness.periodSeconds` | Period | `30` |
+| `probes.liveness.timeoutSeconds` | Timeout | `10` |
+| `probes.liveness.failureThreshold` | Failure threshold | `3` |
 | `probes.readiness.enabled` | Enable readiness probe | `true` |
 | `probes.readiness.initialDelaySeconds` | Initial delay | `15` |
 | `probes.readiness.periodSeconds` | Period | `5` |
+| `probes.readiness.timeoutSeconds` | Timeout | `5` |
+| `probes.readiness.failureThreshold` | Failure threshold | `3` |
+
+### Environment Variable Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `env` | Additional environment variables for all pods | `[]` |
+| `envFrom` | Environment variables from ConfigMaps or Secrets | `[]` |
+
+---
 
 ## Examples
 
@@ -203,6 +248,8 @@ helm install c8r-network-agent ./c8r-network-agent \
   --set cloud=aws \
   --set region=us-east-1 \
   --set cluster=prod-cluster \
+  --set organisationID=my-org-id \
+  --set clusterID=my-cluster-id \
   --set deployment.replicaCount=5 \
   --set exporter.numWorkers=40
 ```
@@ -218,6 +265,28 @@ helm install c8r-network-agent ./c8r-network-agent \
   --set cluster=prod-cluster \
   --set exporter.azureContainerURL="https://myaccount.blob.core.windows.net/container"
 ```
+
+### Using Environment Variable Fallbacks (e.g. with External Secrets)
+```yaml
+# values.yaml
+environmentFromEnv: true
+cloudFromEnv: true
+regionFromEnv: true
+clusterFromEnv: true
+organisationIDFromEnv: true
+clusterIDFromEnv: true
+exporter:
+  azureContainerURLFromEnv: true
+```
+
+```yaml
+# Pair with envFrom to inject values from a Secret at runtime
+envFrom:
+  - secretRef:
+      name: c8r-runtime-config
+```
+
+---
 
 ## Troubleshooting
 

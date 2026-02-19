@@ -8,9 +8,20 @@ nameOverride: ""
 fullnameOverride: ""
 
 environment: development
+environmentFromEnv: false
 cloud: ""
+cloudFromEnv: false
 region: ""
+regionFromEnv: false
 cluster: ""
+clusterFromEnv: false
+
+organisationID: ""
+organisationIDFromEnv: false
+
+clusterID: ""
+clusterIDFromEnv: false
+
 
 # =============================================================================
 # IMAGE CONFIGURATION
@@ -70,6 +81,7 @@ service:
   type: ClusterIP
   port: 8874
   annotations: {}
+grpcPortFromEnv: false
 
 # =============================================================================
 # METRICS CONFIGURATION
@@ -78,6 +90,8 @@ service:
 metrics:
   enabled: true
   port: 8873
+
+metricsPortFromEnv: false
 
 serviceMonitors:
   enabled: false
@@ -145,14 +159,17 @@ deployment:
   topologySpreadConstraints: []
 
 maxGRPCConnectionAge: 300s
+maxGRPCConnectionAgeFromEnv: false
 
 # =============================================================================
 # EXPORTER CONFIGURATION
 # =============================================================================
 
 exporter:
-  numWorkers: 20
+  numWorkers: 40
+  numWorkersFromEnv: false
   ignoreUDP: true
+  ignoreUDPFromEnv: false
   azureContainerURL: ""
   azureContainerURLFromEnv: false
 

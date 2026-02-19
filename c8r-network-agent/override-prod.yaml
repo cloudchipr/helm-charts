@@ -4,6 +4,12 @@ cloud: azure
 region: westus2
 cluster: c8r-prod
 
+organisationIDFromEnv: true
+
+clusterID: "c8r-prod"
+clusterIDFromEnv: false
+
+
 image:
   repository: quay.io/cloudchipr/c8r-network-agent
   pullPolicy: IfNotPresent
