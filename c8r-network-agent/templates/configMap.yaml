@@ -11,19 +11,39 @@ metadata:
     {{- include "c8r.labels" . | nindent 4 }}
 data:
   config.yaml: |
-    metrics_port: {{ if .Values.metricsPortFromEnv }}${METRICS_PORT}{{ else }}{{ .Values.metrics.port }}{{ end }}
-    grpc_port: {{ if .Values.grpcPortFromEnv }}${GRPC_PORT}{{ else }}{{ .Values.service.port }}{{ end }}
-    environment: {{ if .Values.environmentFromEnv }}${ENVIRONMENT}{{ else }}{{ .Values.environment | quote }}{{ end }}
-    cloud: {{ if .Values.cloudFromEnv }}${CLOUD}{{ else }}{{ .Values.cloud | quote }}{{ end }}
-    region: {{ if .Values.regionFromEnv }}${REGION}{{ else }}{{ .Values.region | quote }}{{ end }}
-    cluster: {{ if .Values.clusterFromEnv }}${CLUSTER}{{ else }}{{ .Values.cluster | quote }}{{ end }}
-    max_grpc_connection_age: {{ if .Values.maxGRPCConnectionAgeFromEnv }}${MAX_GRPC_CONNECTION_AGE}{{ else }}{{ .Values.maxGRPCConnectionAge | quote }}{{ end }}
-    num_exporter_workers: {{ if .Values.exporter.numWorkersFromEnv }}${NUM_EXPORTER_WORKERS}{{ else }}{{ .Values.exporter.numWorkers }}{{ end }}
-    organisation_id: {{ if .Values.organisationIDFromEnv }}${ORGANISATION_ID}{{ else }}{{ .Values.organisationID | quote }}{{ end }}
-    cluster_id: {{ if .Values.clusterIDFromEnv }}${CLUSTER_ID}{{ else }}{{ .Values.clusterID | quote }}{{ end }}
-    {{- if or .Values.exporter.ignoreUDP .Values.exporter.ignoreUDPFromEnv }}
-    ignore_udp: {{ if .Values.exporter.ignoreUDPFromEnv }}${IGNORE_UDP}{{ else }}{{ .Values.exporter.ignoreUDP }}{{ end }}
+    {{- if not .Values.metricsPortFromEnv }}
+    metrics_port: {{ .Values.metrics.port }}
     {{- end }}
-    {{- if or .Values.exporter.azureContainerURL .Values.exporter.azureContainerURLFromEnv }}
-    azure_container_url: {{ if .Values.exporter.azureContainerURLFromEnv }}${AZURE_CONTAINER_URL}{{ else }}{{ .Values.exporter.azureContainerURL | quote }}{{ end }}
+    {{- if not .Values.grpcPortFromEnv }}
+    grpc_port: {{ .Values.service.port }}
+    {{- end }}
+    {{- if not .Values.environmentFromEnv }}
+    environment: {{ .Values.environment | quote }}
+    {{- end }}
+    {{- if not .Values.cloudFromEnv }}
+    cloud: {{ .Values.cloud | quote }}
+    {{- end }}
+    {{- if not .Values.regionFromEnv }}
+    region: {{ .Values.region | quote }}
+    {{- end }}
+    {{- if not .Values.clusterFromEnv }}
+    cluster: {{ .Values.cluster | quote }}
+    {{- end }}
+    {{- if not .Values.maxGRPCConnectionAgeFromEnv }}
+    max_grpc_connection_age: {{ .Values.maxGRPCConnectionAge | quote }}
+    {{- end }}
+    {{- if not .Values.exporter.numWorkersFromEnv }}
+    num_exporter_workers: {{ .Values.exporter.numWorkers }}
+    {{- end }}
+    {{- if not .Values.organisationIDFromEnv }}
+    organisation_id: {{ .Values.organisationID | quote }}
+    {{- end }}
+    {{- if not .Values.clusterIDFromEnv }}
+    cluster_id: {{ .Values.clusterID | quote }}
+    {{- end }}
+    {{- if and .Values.exporter.ignoreUDP (not .Values.exporter.ignoreUDPFromEnv) }}
+    ignore_udp: {{ .Values.exporter.ignoreUDP }}
+    {{- end }}
+    {{- if and .Values.exporter.azureContainerURL (not .Values.exporter.azureContainerURLFromEnv) }}
+    azure_container_url: {{ .Values.exporter.azureContainerURL | quote }}
     {{- end }}

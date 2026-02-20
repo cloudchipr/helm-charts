@@ -2,8 +2,8 @@ apiVersion: v2
 name: c8r-network-agent
 description: A Helm chart for deploying c8r-network-agent on Kubernetes for network traffic monitoring
 type: application
-version: 0.1.1-alpha
-appVersion: "v0.1.1-alpha"
+version: 0.1.0-alpha
+appVersion: "v0.1.0-alpha"
 
 keywords:
   - network
