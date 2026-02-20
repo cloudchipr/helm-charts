@@ -4,7 +4,7 @@ cloud: azure
 region: westus2
 cluster: c8r-dev
 
-clusterID: "c8r-dev"
+clusterID: "793460b7-76e0-4685-9ca2-acae9341a5dc"
 clusterIDFromEnv: false
 
 organisationIDFromEnv: true

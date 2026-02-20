@@ -6,7 +6,7 @@ cluster: c8r-prod
 
 organisationIDFromEnv: true
 
-clusterID: "c8r-prod"
+clusterID: "a61f205e-e354-46b6-b34e-09707b5662e4"
 clusterIDFromEnv: false
 
 
