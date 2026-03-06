@@ -1,14 +1,21 @@
+{{- /*
+RoleBinding for c8r-network-agent
+*/ -}}
+{{- if .Values.serviceAccount.create -}}
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "c8r.fullname" . }}-secrets-reader-binding
+  name: {{ include "c8r.fullname" . }}-reader-binding
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "c8r.labels" . | nindent 4 }}
 roleRef:
-  kind: Role
-  name: {{ include "c8r.fullname" . }}-secrets-reader
   apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "c8r.fullname" . }}-reader
 subjects:
-- kind: ServiceAccount
-  name: {{ include "c8r.serviceAccountName" . }}
-  namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: {{ include "c8r.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

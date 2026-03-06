@@ -1,3 +1,9 @@
+{{- /*
+ClusterRoleBinding for c8r-network-agent
+Binds the ClusterRole to the ServiceAccount
+*/ -}}
+{{- if .Values.serviceAccount.create -}}
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -9,6 +15,7 @@ roleRef:
   kind: ClusterRole
   name: {{ include "c8r.fullname" . }}
 subjects:
-- kind: ServiceAccount
-  name: {{ include "c8r.serviceAccountName" . }}
-  namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: {{ include "c8r.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

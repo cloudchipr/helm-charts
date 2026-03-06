@@ -1,0 +1,79 @@
+# develproductionopment azure environment values
+environment: production
+cloud: azure
+region: westus2
+cluster: c8r-prod
+
+organisationIDFromEnv: true
+
+clusterID: "a61f205e-e354-46b6-b34e-09707b5662e4"
+clusterIDFromEnv: false
+
+image:
+  repository: quay.io/cloudchipr/c8r-network-agent
+  pullPolicy: IfNotPresent
+  tag: "v0.1.3-alpha1"
+
+deployment:
+  replicaCount: 2
+
+resources:
+  agent:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  server:
+    limits:
+      cpu: 4000m
+      memory: 4Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+
+exporter:
+  numWorkers: 40
+  ignoreUDP: true
+  azureContainerURLFromEnv: true
+
+tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+serviceMonitors:
+  enabled: true
+  interval: 15s
+
+priorityClass:
+  enabled: true
+  value: 10001000
+
+extraObjects:
+  - apiVersion: external-secrets.io/v1beta1
+    kind: ExternalSecret
+    metadata:
+      name: c8r-network-agent-environment
+    spec:
+      dataFrom:
+        - extract:
+            conversionStrategy: Default
+            decodingStrategy: None
+            key: kv-production/saas/microservices/c8r-network-agent-environment
+            metadataPolicy: None
+      refreshInterval: 15s
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: saas-secrets-vault
+      target:
+        creationPolicy: Owner
+        deletionPolicy: Retain
+
+envFrom:
+  - secretRef:
+      name: c8r-network-agent-environment
+
+podAnnotations:
+  secret.reloader.stakater.com/reload: c8r-network-agent-environment

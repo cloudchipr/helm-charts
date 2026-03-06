@@ -1,0 +1,43 @@
+# Production Azure environment values
+
+environment: production
+cloud: azure
+region: eastus
+cluster: prod-cluster
+
+deployment:
+  replicaCount: 5
+
+resources:
+  agent:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  server:
+    limits:
+      cpu: 4000m
+      memory: 4Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+
+exporter:
+  numWorkers: 40
+  ignoreUDP: true
+  azureContainerURL: "https://myaccount.blob.core.windows.net/network-data"
+
+tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+serviceMonitors:
+  enabled: true
+  interval: 15s
+
+priorityClass:
+  enabled: true
+  value: 10001000

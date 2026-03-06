@@ -1,0 +1,38 @@
+# Development environment values
+
+environment: development
+
+configuration:
+  agent:
+    skipConntrackSanityCheck: true
+    collectionInterval: 10s
+    uptimeWaitDuration: 60s
+
+deployment:
+  replicaCount: 1
+
+resources:
+  agent:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 32Mi
+  server:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+exporter:
+  numWorkers: 5
+  ignoreUDP: true
+
+priorityClass:
+  enabled: false
+
+serviceMonitors:
+  enabled: false

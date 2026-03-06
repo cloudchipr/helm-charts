@@ -1,12 +1,17 @@
-{{- if .Values.priorityClass.enabled }}
+{{- /*
+PriorityClass for c8r-network-agent
+Ensures agent and server pods are scheduled with appropriate priority
+*/ -}}
+{{- if .Values.priorityClass.enabled -}}
 ---
 apiVersion: scheduling.k8s.io/v1
-description: Used for c8r-network-agent to ensure pods are scheduled
 kind: PriorityClass
 metadata:
-  name: {{ .Values.priorityClass.name }}
+  name: {{ include "c8r.priorityClassName" . }}
   labels:
     {{- include "c8r.labels" . | nindent 4 }}
+description: {{ .Values.priorityClass.description | default "Priority class for c8r-network-agent to ensure pods are scheduled" | quote }}
+globalDefault: false
 preemptionPolicy: {{ .Values.priorityClass.preemptionPolicy }}
-value: {{ int64 .Values.priorityClass.value }}
+value: {{ .Values.priorityClass.value | int }}
 {{- end }}

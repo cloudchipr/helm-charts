@@ -1,6 +1,21 @@
 apiVersion: v2
-appVersion: v0.1.0
-description: A Helm chart for installing c8r-network-agent on Kubernetes
 name: c8r-network-agent
+description: A Helm chart for deploying c8r-network-agent on Kubernetes for network traffic monitoring
 type: application
-version: 0.1.0
+version: 0.1.0-alpha
+appVersion: "v0.1.0-alpha"
+
+keywords:
+  - network
+  - monitoring
+  - kubernetes
+  - conntrack
+  - observability
+  - traffic
+  - daemonset
+
+maintainers:
+  - name: c8r-network-agent maintainers
+
+annotations:
+  category: Monitoring

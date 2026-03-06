@@ -1,28 +1,49 @@
+{{- /*
+ConfigMap for c8r-network-agent server configuration
+*/ -}}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "c8r.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "c8r.labels" . | nindent 4 }}
 data:
-  config.yaml: |-
+  config.yaml: |
+    {{- if not .Values.metricsPortFromEnv }}
     metrics_port: {{ .Values.metrics.port }}
+    {{- end }}
+    {{- if not .Values.grpcPortFromEnv }}
     grpc_port: {{ .Values.service.port }}
-    environment: {{ .Values.environment }}
-    cloud: {{ .Values.cloud }}
-    region: {{ .Values.region }}
-    cluster: {{ .Values.cluster }}
-    max_grpc_connection_age: {{ .Values.maxGRPCConnectionAge }}
-    num_inserter_workers: {{ .Values.inserter.numInserterWorkers }}
-    ignore_udp: {{ .Values.inserter.ignoreUDP }}
-    clickhouse_enabled: {{ .Values.inserter.enabled }}
-    clickhouse_database: {{ .Values.inserter.database }}
-    clickhouse_endpoint: {{ .Values.inserter.endpoint }}
-    clickhouse_dial_timeout: {{ .Values.inserter.dialTimeout }}
-    clickhouse_max_idle_connections: {{ .Values.inserter.maxIdleConnections }}
-    clickhouse_batch_size: {{ .Values.inserter.batchSize }}
-    clickhouse_batch_send_timeout: {{ .Values.inserter.batchSendTimeout }}
-    clickhouse_wait_for_async_insert: {{ .Values.inserter.waitForAsyncInsert }}
-    clickhouse_skip_ping: {{ .Values.inserter.skipPing }}
-    clickhouse_disable_tls: {{ .Values.inserter.disableTLS }}
+    {{- end }}
+    {{- if not .Values.environmentFromEnv }}
+    environment: {{ .Values.environment | quote }}
+    {{- end }}
+    {{- if not .Values.cloudFromEnv }}
+    cloud: {{ .Values.cloud | quote }}
+    {{- end }}
+    {{- if not .Values.regionFromEnv }}
+    region: {{ .Values.region | quote }}
+    {{- end }}
+    {{- if not .Values.clusterFromEnv }}
+    cluster: {{ .Values.cluster | quote }}
+    {{- end }}
+    {{- if not .Values.maxGRPCConnectionAgeFromEnv }}
+    max_grpc_connection_age: {{ .Values.maxGRPCConnectionAge | quote }}
+    {{- end }}
+    {{- if not .Values.exporter.numWorkersFromEnv }}
+    num_exporter_workers: {{ .Values.exporter.numWorkers }}
+    {{- end }}
+    {{- if not .Values.organisationIDFromEnv }}
+    organisation_id: {{ .Values.organisationID | quote }}
+    {{- end }}
+    {{- if not .Values.clusterIDFromEnv }}
+    cluster_id: {{ .Values.clusterID | quote }}
+    {{- end }}
+    {{- if and .Values.exporter.ignoreUDP (not .Values.exporter.ignoreUDPFromEnv) }}
+    ignore_udp: {{ .Values.exporter.ignoreUDP }}
+    {{- end }}
+    {{- if and .Values.exporter.azureContainerURL (not .Values.exporter.azureContainerURLFromEnv) }}
+    azure_container_url: {{ .Values.exporter.azureContainerURL | quote }}
+    {{- end }}
