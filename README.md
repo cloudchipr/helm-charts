@@ -1,5 +1,10 @@
 # C8R Kubernetes Helm Charts
 
+> [!WARNING]
+> **This repository is archived and no longer maintained.**
+>
+> Development has moved to [cloudchipr/cloudchipr-resources](https://github.com/cloudchipr/cloudchipr-resources). Please use the new repository for the latest charts, issues, and contributions.
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) <!-- ![Release Charts](https://github.com/cloudchipr/helm-charts/workflows/Release%20Charts/badge.svg?branch=main) --> [![Releases Downloads](https://img.shields.io/github/downloads/cloudchipr/helm-charts/total.svg)](https://github.com/cloudchipr/helm-charts/releases)
 
 ## Requirements
